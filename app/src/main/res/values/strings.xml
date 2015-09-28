@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Overwatch</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_bluetooth_serial_communication">BluetoothSerialCommunication
+    </string>
+    <string name="mainMenu">MainMenu</string>
+    <string name="bluetoothSerialCommunication">Bluetooth Serial Communication</string>
+    <string name="bluetoothSerialCommunicationText">Bluetooth Serial Communication</string>
+    <string name="open">Open</string>
+    <string name="send">Send</string>
+    <string name="label">Label</string>
+</resources>
