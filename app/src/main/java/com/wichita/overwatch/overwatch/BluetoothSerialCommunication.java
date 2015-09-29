@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
+
 public class BluetoothSerialCommunication extends AppCompatActivity {
 
     TextView myLabel;
@@ -28,12 +29,11 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket mmSocket;
     BluetoothDevice mmDevice;
-    OutputStream mmOutputStream;
-    InputStream mmInputStream;
+    static OutputStream mmOutputStream;//might screw things up
+    static InputStream mmInputStream;
     Thread workerThread;
     byte[] readBuffer;
     int readBufferPosition;
-    int counter;
     volatile boolean stopWorker;
 
     @Override
@@ -52,9 +52,10 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
                 try {
                     findBT();
                     openBT();
-
                 }
-                catch (IOException ex) { }
+                catch (IOException ex) {
+                    showMessage("openButton.setOnClickListener ERROR");
+                }
             }
         });
 
@@ -64,7 +65,9 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
                 try {
                     closeBT();
                 }
-                catch (IOException ex) { }
+                catch (IOException ex) {
+                    showMessage("closeButton.setOnClickListener ERROR");
+                }
             }
         });
 
@@ -118,6 +121,7 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
     void beginListenForData() {
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
+
 
         stopWorker = false;
         readBufferPosition = 0;

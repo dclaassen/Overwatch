@@ -14,35 +14,34 @@
         android:text="@string/bluetoothSerialCommunicationText"
         android:id="@+id/bluetoothSerialCommunicationText"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="59dp" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/open"
         android:id="@+id/open"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_marginTop="61dp"
+        android:layout_below="@+id/bluetoothSerialCommunicationText"
+        android:layout_toLeftOf="@+id/send"
+        android:layout_toStartOf="@+id/send" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/send"
         android:id="@+id/send"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/open"
-        android:layout_toEndOf="@+id/open" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Close"
         android:id="@+id/close"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignTop="@+id/open"
+        android:layout_toRightOf="@+id/send"
+        android:layout_toEndOf="@+id/send" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -50,20 +49,19 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/label"
         android:id="@+id/label"
-        android:layout_marginTop="141dp"
-        android:layout_below="@+id/close"
-        android:layout_alignLeft="@+id/close"
-        android:layout_alignStart="@+id/close" />
+        android:layout_marginBottom="79dp"
+        android:layout_above="@+id/entry"
+        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/entry"
-        android:layout_below="@+id/label"
-        android:layout_marginTop="37dp"
+        android:inputType="text"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="61dp"
         android:layout_alignRight="@+id/close"
         android:layout_alignEnd="@+id/close"
-        android:layout_toRightOf="@+id/send"
-        android:layout_toEndOf="@+id/send"
-        android:inputType="text" />
+        android:layout_alignLeft="@+id/open"
+        android:layout_alignStart="@+id/open" />
 </RelativeLayout>

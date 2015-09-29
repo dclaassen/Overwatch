@@ -11,4 +11,14 @@
     <string name="open">Open</string>
     <string name="send">Send</string>
     <string name="label">Label</string>
+    <string name="title_activity_bluetooth_remote_control">BluetoothRemoteControl</string>
+    <string name="forward">F</string>
+    <string name="left">L</string>
+    <string name="right">R</string>
+    <string name="backward">B</string>
+    <string name="a">a</string>
+    <string name="b">b</string>
+    <string name="select">select</string>
+    <string name="start">START</string>
+    <string name="bluetoothRemoteControl">BLUETOOTH REMOTE CONTROL</string>
 </resources>
