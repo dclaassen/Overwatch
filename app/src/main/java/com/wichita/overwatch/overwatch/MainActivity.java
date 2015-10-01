@@ -1,3 +1,10 @@
+/*
+* To Do
+*   -Fix error when opening the bluetooth connection
+*   -Fix error when closing the bluetooth connection
+*   -
+* */
+
 package com.wichita.overwatch.overwatch;
 
 import android.content.Intent;
