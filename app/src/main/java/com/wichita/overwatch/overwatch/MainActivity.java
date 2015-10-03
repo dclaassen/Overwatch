@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button bluetoothSerialCommunicationSwitchScreens;
     Button bluetoothRemoteControlSwitchScreens;
+    Button plotRouteSwitchScreens;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bluetoothSerialCommunicationSwitchScreens.setOnClickListener(this);
         bluetoothRemoteControlSwitchScreens = (Button)findViewById(R.id.bluetoothRemoteControl);
         bluetoothRemoteControlSwitchScreens.setOnClickListener(this);
+        plotRouteSwitchScreens = (Button)findViewById(R.id.plotRoute);
+        plotRouteSwitchScreens.setOnClickListener(this);
     }
 
     @Override
@@ -63,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent bluetoothRemoteControlIntent = new Intent(MainActivity.this, BluetoothRemoteControl.class);
         startActivity(bluetoothRemoteControlIntent);
     }
+    //create the link to and start the Bluetooth Remote Control screen/activity
+    public void plotRouteSwitchScreensClick() {
+        Intent plotRouteIntent = new Intent(MainActivity.this, MapsActivity.class);
+        startActivity(plotRouteIntent);
+    }
 
     //Chooses the appropriate function to execute depending on which button has been clicked
     @Override
@@ -73,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.bluetoothRemoteControl:
                 bluetoothRemoteControlSwitchScreensClick();
+                break;
+            case R.id.plotRoute:
+                plotRouteSwitchScreensClick();
                 break;
         }
     }

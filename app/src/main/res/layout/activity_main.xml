@@ -38,8 +38,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button3"
+        android:text="@string/plotRoute"
+        android:id="@+id/plotRoute"
         android:layout_marginTop="21dp"
         android:layout_below="@+id/bluetoothRemoteControl"
         android:layout_alignLeft="@+id/bluetoothRemoteControl"
@@ -51,7 +51,7 @@
         android:text="New Button"
         android:id="@+id/button4"
         android:layout_marginTop="25dp"
-        android:layout_below="@+id/button3"
-        android:layout_alignLeft="@+id/button3"
-        android:layout_alignStart="@+id/button3" />
+        android:layout_below="@+id/plotRoute"
+        android:layout_alignLeft="@+id/plotRoute"
+        android:layout_alignStart="@+id/plotRoute" />
 </RelativeLayout>

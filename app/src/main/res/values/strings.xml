@@ -21,4 +21,12 @@
     <string name="select">select</string>
     <string name="start">START</string>
     <string name="bluetoothRemoteControl">BLUETOOTH REMOTE CONTROL</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="str_btn_draw">Draw Route</string>
+    <string name="search">Search</string>
+    <string name="maptype">Map Type</string>
+    <string name="in">In</string>
+    <string name="out">Out</string>
+    <string name="sendlatlng">send lat/lng</string>
+    <string name="plotRoute">Plot Route</string>
 </resources>
