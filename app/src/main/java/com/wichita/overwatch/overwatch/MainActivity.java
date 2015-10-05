@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -56,18 +57,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+    private void showMessage(String theMsg) {
+        Toast msg = Toast.makeText(getBaseContext(),
+                theMsg, (Toast.LENGTH_SHORT));
+        msg.show();
+    }
+
     //create the link to and start the Bluetooth Serial Communication screen/activity
-    public void bluetoothSerialCommunicationSwitchScreensClick() {
+    public void bluetoothSerialCommunicationSwitchScreensClick() throws Exception{
         Intent bluetoothSerialCommunicationIntent = new Intent(MainActivity.this, BluetoothSerialCommunication.class);
         startActivity(bluetoothSerialCommunicationIntent);
     }
     //create the link to and start the Bluetooth Remote Control screen/activity
-    public void bluetoothRemoteControlSwitchScreensClick() {
+    public void bluetoothRemoteControlSwitchScreensClick() throws Exception{
         Intent bluetoothRemoteControlIntent = new Intent(MainActivity.this, BluetoothRemoteControl.class);
         startActivity(bluetoothRemoteControlIntent);
     }
     //create the link to and start the Bluetooth Remote Control screen/activity
-    public void plotRouteSwitchScreensClick() {
+    public void plotRouteSwitchScreensClick() throws Exception{
         Intent plotRouteIntent = new Intent(MainActivity.this, MapsActivity.class);
         startActivity(plotRouteIntent);
     }
@@ -77,14 +84,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bluetoothSerialCommunication:
-                bluetoothSerialCommunicationSwitchScreensClick();
-                break;
+                try {
+                    bluetoothSerialCommunicationSwitchScreensClick();
+                    break;
+                } catch (Exception e) {
+                    showMessage("bluetoothSerialCommunicationsSwi...() E ERROR");
+                }
             case R.id.bluetoothRemoteControl:
-                bluetoothRemoteControlSwitchScreensClick();
-                break;
+                try {
+                    bluetoothRemoteControlSwitchScreensClick();
+                    break;
+                } catch (Exception e) {
+                    showMessage("bluetoothSerialCommunicationsSwi...() E ERROR");
+                }
             case R.id.plotRoute:
-                plotRouteSwitchScreensClick();
-                break;
+                try {
+                    plotRouteSwitchScreensClick();
+                    break;
+                } catch (Exception e) {
+                    showMessage("plotRouteSwitchScreensClick() E ERROR");
+                }
         }
     }
 

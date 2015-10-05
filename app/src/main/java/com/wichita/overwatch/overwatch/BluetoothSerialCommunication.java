@@ -54,7 +54,10 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
                     openBT();
                 }
                 catch (IOException ex) {
-                    showMessage("openButton.setOnClickListener ERROR");
+                    showMessage("openButton.setOnClickListener IO ERROR");
+                }
+                catch (Exception e) {
+                    showMessage("openButton.setOnClickListener() E ERROR");
                 }
             }
         });
@@ -66,7 +69,10 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
                     closeBT();
                 }
                 catch (IOException ex) {
-                    showMessage("closeButton.setOnClickListener ERROR");
+                    showMessage("closeButton.setOnClickListener IO ERROR");
+                }
+                catch (Exception e) {
+                    showMessage("closeButton.setOnClickListener() E ERROR");
                 }
             }
         });
@@ -79,6 +85,9 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
                 }
                 catch (IOException ex) {
                     showMessage("SEND FAILED");
+                }
+                catch (Exception e) {
+                    showMessage("sendButton.setOnClickListener() E ERROR");
                 }
             }
         });

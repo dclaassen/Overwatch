@@ -48,13 +48,25 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~notforward");
-                        } catch (IOException ex) {
-                            ;
+                        } catch (Exception e) {
+                            showMessage("forward.setOnClickListener() E ERROR");
                         }
                     }
                 }
         );
-        /*
+        forward.setOnLongClickListener(
+                new Button.OnLongClickListener() {
+                    public boolean onLongClick(View v) {
+                        try {
+                            sendControllerSignal("~forward");
+                        } catch (Exception e) {
+                            showMessage("forward.setOnLongClickListener() E ERROR");
+                        }
+                        return false;
+                    }
+                }
+        );
+        /*//Only for using when repeating signals need sent
         forward.setOnTouchListener(
                 new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
@@ -76,6 +88,18 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                         } catch (IOException ex) {
                             ;
                         }
+                    }
+                }
+        );
+        backward.setOnLongClickListener(
+                new Button.OnLongClickListener() {
+                    public boolean onLongClick(View v) {
+                        try {
+                            sendControllerSignal("~backward");
+                        } catch (Exception e) {
+                            showMessage("backward.setOnLongClickListener() E ERROR");
+                        }
+                        return false;
                     }
                 }
         );
@@ -104,6 +128,18 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     }
                 }
         );
+        left.setOnLongClickListener(
+                new Button.OnLongClickListener() {
+                    public boolean onLongClick(View v) {
+                        try {
+                            sendControllerSignal("~left");
+                        } catch (Exception e) {
+                            showMessage("left.setOnLongClickListener() E ERROR");
+                        }
+                        return false;
+                    }
+                }
+        );
         /*
         left.setOnTouchListener(
                 //RepeatListener(int initialInterval, int normalInterval, OnClickListener clickListener)
@@ -127,6 +163,18 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                         } catch (IOException ex) {
                             ;
                         }
+                    }
+                }
+        );
+        right.setOnLongClickListener(
+                new Button.OnLongClickListener() {
+                    public boolean onLongClick(View v) {
+                        try {
+                            sendControllerSignal("~right");
+                        } catch (Exception e) {
+                            showMessage("right.setOnLongClickListener() E ERROR");
+                        }
+                        return false;
                     }
                 }
         );
@@ -239,6 +287,11 @@ public class BluetoothRemoteControl extends AppCompatActivity {
         setNormalInterval(getNormalInterval() - 100);
     }
 
+    private void showMessage(String theMsg) {
+        Toast msg = Toast.makeText(getBaseContext(),
+                theMsg, (Toast.LENGTH_SHORT));
+        msg.show();
+    }
     //Methods placed by default
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
