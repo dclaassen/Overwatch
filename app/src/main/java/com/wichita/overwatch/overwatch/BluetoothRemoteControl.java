@@ -13,9 +13,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
+
 import java.io.IOException;
 
 public class BluetoothRemoteControl extends AppCompatActivity {
+
+    private int initialInterval = 400;
+    private int normalInterval = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +54,9 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     }
                 }
         );
+        /*
         forward.setOnTouchListener(
-                new RepeatListener(400, 100, new OnClickListener() {
+                new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
@@ -60,6 +66,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                         }
                     }
                 }));
+        */
 
         backward.setOnClickListener(
                 new Button.OnClickListener() {
@@ -72,8 +79,9 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     }
                 }
         );
+        /*
         backward.setOnTouchListener(
-                new RepeatListener(400, 100, new OnClickListener() {
+                new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
@@ -83,6 +91,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                         }
                     }
                 }));
+        */
 
         left.setOnClickListener(
                 new Button.OnClickListener() {
@@ -95,8 +104,10 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     }
                 }
         );
+        /*
         left.setOnTouchListener(
-                new RepeatListener(400, 100, new OnClickListener() {
+                //RepeatListener(int initialInterval, int normalInterval, OnClickListener clickListener)
+                new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
@@ -106,6 +117,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                         }
                     }
                 }));
+        */
 
         right.setOnClickListener(
                 new Button.OnClickListener() {
@@ -118,8 +130,9 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     }
                 }
         );
+        /*
         right.setOnTouchListener(
-                new RepeatListener(400, 100, new OnClickListener() {
+                new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
@@ -129,6 +142,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                         }
                     }
                 }));
+        */
 
         //Regular Button click listeners
         a.setOnClickListener(
@@ -185,6 +199,44 @@ public class BluetoothRemoteControl extends AppCompatActivity {
     void sendControllerSignal(String str) throws IOException{
         str += "\n";
         BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
+    }
+
+    //Interval setting variables sent to RepeatListener.java GET and SET
+    //Not in use ....
+    int getInitialInterval() {
+        return initialInterval;
+    }
+    void setInitialInterval(int initialIntervalP) {
+        if ( initialIntervalP <= 3000 && initialIntervalP > 0) {
+            initialInterval = initialIntervalP;
+        } else {
+            String theMsg = "Error in setInitalInterval\n";
+            Toast msg = Toast.makeText(getBaseContext(), theMsg, (Toast.LENGTH_SHORT) );
+            msg.show();
+        }
+    }
+    //Interval setting variables sent to RepeatListener.java GET and SET
+    //Not in use .....
+    int getNormalInterval() {
+        return normalInterval;
+    }
+    void setNormalInterval(int normalIntervalP) {
+        if ( normalIntervalP <= 3000 && normalIntervalP > 0) {
+            normalInterval = normalIntervalP;
+        } else {
+            String theMsg = "Error in setNormalInterval\n";
+            Toast msg = Toast.makeText(getBaseContext(), theMsg, (Toast.LENGTH_SHORT) );
+            msg.show();
+        }
+    }
+
+    void increaseInterval () {
+        setInitialInterval(getInitialInterval() + 100);
+        setNormalInterval(getNormalInterval() + 100);
+    }
+    void decreaseInterval () {
+        setInitialInterval(getInitialInterval() - 100);
+        setNormalInterval(getNormalInterval() - 100);
     }
 
     //Methods placed by default
