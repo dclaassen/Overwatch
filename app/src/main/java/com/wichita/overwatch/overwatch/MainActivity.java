@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(plotRouteIntent);
     }
 
+
+
     //Chooses the appropriate function to execute depending on which button has been clicked
     @Override
     public void onClick(View v) {

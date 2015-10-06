@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -133,19 +134,25 @@ public class MapsActivity extends FragmentActivity {
         sendLatLng.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        String str = markerPoints.toString();
-                        str += "\n";
-                        latlngStrings.setText(str);
+                        String str = markerPoints.toString();//string used for maps activity printout
+                        //String transmitString;//string that is sent to Arduino via bluetooth
+                        //transmitString = formatLatLngStrings();
+                        //transmitString += "\n";
+                        latlngStrings.setText(str);//send to textbox in activity
+                        transmitStringOnBluetooth();
+                        //try to send transmitString via bluetooth in byte form
+                        /*
                         try {
-                            BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
-                        } catch (IOException e) {
-                            ;
+                            BluetoothSerialCommunication.mmOutputStream.write(transmitString.getBytes());
+                        } catch (Exception e) {
+                            showMessage("sendLatLng.setOnClickListener() ERROR");
                         }
+                        */
                     }
                 }
         );
 
-    }
+    }//END onCreate()
 
     @Override
     protected void onResume() {
@@ -233,6 +240,49 @@ public class MapsActivity extends FragmentActivity {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         //set a marker for your location
         map.setMyLocationEnabled(true);
+    }
+    private void showMessage(String theMsg) {
+        Toast msg = Toast.makeText(getBaseContext(),
+                theMsg, (Toast.LENGTH_SHORT));
+        msg.show();
+    }
+    public String formatLatLngStrings() {
+        String str = "";
+        LatLng latLng;
+        /*
+        for (int i = 0; i < markerPoints.size(); i++) {
+            latLng = markerPoints.get(i);
+            str += i + 1;
+            str += ",";
+            str += latLng.latitude;
+            str += ",";
+            str += latLng.longitude + "\n";
+            showMessage(str);
+        }
+        */
+        return str;
+    }
+    public void transmitStringOnBluetooth() {
+        String str = "";
+        LatLng latLng;
+
+        for (int i = 0; i < markerPoints.size(); i++) {
+            str = "";
+            latLng = markerPoints.get(i);
+            str += i + 1;
+            str += ",";
+            str += latLng.latitude;
+            str += ",";
+            str += latLng.longitude + "\n";
+            showMessage(str);
+            try {
+                BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
+            } catch (Exception e) {
+                showMessage("sendLatLng.setOnClickListener() ERROR");
+            }
+
+        }
+
     }
 
 }
