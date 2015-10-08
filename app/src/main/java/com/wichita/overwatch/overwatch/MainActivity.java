@@ -8,6 +8,7 @@
 package com.wichita.overwatch.overwatch;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -75,8 +76,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     //create the link to and start the Bluetooth Remote Control screen/activity
     public void plotRouteSwitchScreensClick() throws Exception{
-        Intent plotRouteIntent = new Intent(MainActivity.this, MapsActivity.class);
-        startActivity(plotRouteIntent);
+        try {
+            Intent plotRouteIntent = new Intent(MainActivity.this, MapsActivity.class);
+            startActivity(plotRouteIntent);
+        }
+        catch (Fragment.InstantiationException e) {
+            showMessage("Error creating MapsActivity");
+        }
+        catch (Exception e) {
+            showMessage("Error creating MapsActivity EXCEPTION e");
+        }
     }
 
 
@@ -108,5 +117,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
         }
     }
+
 
 }

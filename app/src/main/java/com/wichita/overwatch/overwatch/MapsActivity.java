@@ -30,12 +30,13 @@ public class MapsActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        setUpMapIfNeeded();
-        // Initializing
-        markerPoints = new ArrayList<LatLng>();
-        latlngStrings = (EditText)findViewById(R.id.latlngStrings);
-        Button sendLatLng = (Button)findViewById(R.id.sendLatLng);
+        try {
+            setContentView(R.layout.activity_maps);
+            setUpMapIfNeeded();
+            // Initializing
+            markerPoints = new ArrayList<LatLng>();
+            latlngStrings = (EditText) findViewById(R.id.latlngStrings);
+            Button sendLatLng = (Button) findViewById(R.id.sendLatLng);
 
         // Getting reference to SupportMapFragment of the activity_main
         SupportMapFragment fm = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
@@ -151,6 +152,11 @@ public class MapsActivity extends FragmentActivity {
                     }
                 }
         );
+
+        }
+        catch (Exception e){
+            showMessage("Error EXCEPTION e");
+        }
 
     }//END onCreate()
 

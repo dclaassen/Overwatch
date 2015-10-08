@@ -107,7 +107,7 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
-                if (device.getName().equals("OverWatch")) {
+                if (device.getName().equals("HC-06")) {
                     mmDevice = device;
                     break;
                 }
