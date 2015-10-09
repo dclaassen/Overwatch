@@ -87,6 +87,8 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                             sendControllerSignal("~notbackward");
                         } catch (IOException ex) {
                             ;
+                        } catch (Exception e) {
+                            showMessage("backward.setOnClickListener() E ERROR");
                         }
                     }
                 }
@@ -124,6 +126,8 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                             sendControllerSignal("~notleft");
                         } catch (IOException ex) {
                             ;
+                        } catch (Exception e) {
+                            showMessage("left.setOnClickListener() E ERROR");
                         }
                     }
                 }
@@ -163,6 +167,9 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                         } catch (IOException ex) {
                             ;
                         }
+                        catch (Exception e) {
+                            showMessage("right.setOnClickListener() E ERROR");
+                        }
                     }
                 }
         );
@@ -200,6 +207,8 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                             sendControllerSignal("~a");
                         } catch (IOException ex) {
                             ;
+                        } catch (Exception e) {
+                            showMessage("a.setOnClickListener() E ERROR");
                         }
                     }
                 }
@@ -212,6 +221,8 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                             sendControllerSignal("~b");
                         } catch (IOException ex) {
                             ;
+                        } catch (Exception e) {
+                            showMessage("b.setOnClickListener() E ERROR");
                         }
                     }
                 }
@@ -224,6 +235,8 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                             sendControllerSignal("~select");
                         } catch (IOException ex) {
                             ;
+                        } catch (Exception e) {
+                            showMessage("select.setOnClickListener() E ERROR");
                         }
                     }
                 }
@@ -236,6 +249,8 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                             sendControllerSignal("~start");
                         } catch (IOException ex) {
                             ;
+                        } catch (Exception e) {
+                            showMessage("right.setOnClickListener() E ERROR");
                         }
                     }
                 }
