@@ -38,10 +38,9 @@ public class BluetoothRemoteControl extends AppCompatActivity {
 
         /*
         * Each of the forward, backward, left, and right buttons have remote control style controls
-        * Pressing one of these buttons will continuously and consistently send a command
+        * On pressing button the action command is sent ex) forward
+        * On releasing button the halt command is sent ex) notforward
         * When it is released the reset type command is given
-        * Ex) holding forward repeatedly sends the ~forward command. When you release the forward
-        *     button the ~notforward command is sent
         */
         forward.setOnClickListener(
                 new Button.OnClickListener() {
@@ -293,15 +292,18 @@ public class BluetoothRemoteControl extends AppCompatActivity {
         }
     }
 
+    //not in use
     void increaseInterval () {
         setInitialInterval(getInitialInterval() + 100);
         setNormalInterval(getNormalInterval() + 100);
     }
+    //not in use
     void decreaseInterval () {
         setInitialInterval(getInitialInterval() - 100);
         setNormalInterval(getNormalInterval() - 100);
     }
 
+    //Prints a message to the Android screen (in the form of a toast: black message box)
     private void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
                 theMsg, (Toast.LENGTH_SHORT));

@@ -123,6 +123,7 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
         mmSocket.connect();
         mmOutputStream = mmSocket.getOutputStream();
         mmInputStream = mmSocket.getInputStream();
+        myLabel.setText("BeginListenForData");
         beginListenForData();
         myLabel.setText("Bluetooth Opened");
     }

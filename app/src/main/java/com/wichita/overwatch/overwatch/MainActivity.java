@@ -22,12 +22,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bluetoothSerialCommunicationSwitchScreens;
     Button bluetoothRemoteControlSwitchScreens;
     Button plotRouteSwitchScreens;
+    Button bluetoothSetupSwitchScreens;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        bluetoothSetupSwitchScreens = (Button)findViewById(R.id.bluetoothSetup);
+        bluetoothSetupSwitchScreens.setOnClickListener(this);
         bluetoothSerialCommunicationSwitchScreens = (Button)findViewById(R.id.bluetoothSerialCommunication);
         bluetoothSerialCommunicationSwitchScreens.setOnClickListener(this);
         bluetoothRemoteControlSwitchScreens = (Button)findViewById(R.id.bluetoothRemoteControl);
@@ -64,6 +67,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         msg.show();
     }
 
+    //Create the link to and start the Bluetooth Setup screen/activity
+    public void bluetoothSetupSwitchScreensClick() throws Exception {
+        Intent bluetoothSetupIntent = new Intent(MainActivity.this, BluetoothSetup.class);
+        startActivity(bluetoothSetupIntent);
+    }
     //create the link to and start the Bluetooth Serial Communication screen/activity
     public void bluetoothSerialCommunicationSwitchScreensClick() throws Exception{
         Intent bluetoothSerialCommunicationIntent = new Intent(MainActivity.this, BluetoothSerialCommunication.class);
@@ -88,12 +96,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-
     //Chooses the appropriate function to execute depending on which button has been clicked
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.bluetoothSetup:
+                try {
+                    bluetoothSetupSwitchScreensClick();
+                } catch (Exception e) {
+                    showMessage("bluetoothSetupSwitchScreensClick() E ERROR");
+                }
             case R.id.bluetoothSerialCommunication:
                 try {
                     bluetoothSerialCommunicationSwitchScreensClick();
