@@ -62,27 +62,27 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sendlatlng"
+                android:text="@string/send"
                 android:id="@+id/sendLatLng" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/startRoute"
+                android:text="@string/startSmall"
                 android:id="@+id/startRoute"
                 android:layout_gravity="bottom" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/stopRoute"
+                android:text="@string/stop"
                 android:id="@+id/stopRoute"
                 android:layout_gravity="bottom" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/uadLoc"
+                android:text="@string/loc"
                 android:id="@+id/uadLocation"
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>

@@ -34,4 +34,7 @@
     <string name="startRoute">Start Route</string>
     <string name="stopRoute">Stop Route</string>
     <string name="uadLoc">UAD LOC</string>
+    <string name="stop">Stop</string>
+    <string name="loc">Loc</string>
+    <string name="startSmall">Start</string>
 </resources>

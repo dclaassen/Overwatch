@@ -28,8 +28,8 @@ public class MapsActivity extends FragmentActivity {
     private GoogleMap map; // Might be null if Google Play services APK is not available.
     ArrayList<LatLng> markerPoints;
     EditText latlngStrings;
-    static int MAXPOINTS = 2;//Trust me
-    static int MAXPOINTSWITHUAD = 3;//Trust me
+    static int MAXPOINTS = 9;//Trust me
+    static int MAXPOINTSWITHUAD = 10;//Trust me
     Thread workerThread;
     byte[] readBuffer;
     int readBufferPosition;
