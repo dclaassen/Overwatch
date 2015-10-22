@@ -58,6 +58,12 @@
             android:name=".BluetoothSetup"
             android:label="@string/title_activity_bluetooth_setup" >
         </activity>
+
+        <service
+            android:name=".BluetoothConnectionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

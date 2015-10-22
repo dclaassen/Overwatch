@@ -9,7 +9,7 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:layout_width="294dp"
+            android:layout_width="205dp"
             android:layout_height="47dp"
             android:id="@+id/TFaddress" />
         <Button
@@ -19,6 +19,14 @@
             android:text="@string/search"
             android:id="@+id/Bsearch"
             android:onClick="onSearch" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/maptype"
+            android:id="@+id/Btype"
+            android:onClick="changeType" />
 
     </LinearLayout>
     <LinearLayout
@@ -34,15 +42,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/maptype"
-                android:id="@+id/Btype"
-                android:layout_gravity="right"
-                android:onClick="changeType" />
 
             <Button
                 android:layout_width="match_parent"
@@ -65,7 +64,29 @@
                 android:layout_height="wrap_content"
                 android:text="@string/sendlatlng"
                 android:id="@+id/sendLatLng" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/startRoute"
+                android:id="@+id/startRoute"
+                android:layout_gravity="bottom" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stopRoute"
+                android:id="@+id/stopRoute"
+                android:layout_gravity="bottom" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/uadLoc"
+                android:id="@+id/uadLocation"
+                android:layout_gravity="center_horizontal" />
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -79,6 +100,8 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/latlngStrings"
             android:layout_gravity="center_vertical" />
+
+
     </LinearLayout>
 </LinearLayout>
 

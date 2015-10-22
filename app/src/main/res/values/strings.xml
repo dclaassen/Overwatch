@@ -31,4 +31,7 @@
     <string name="plotRoute">Plot Route</string>
     <string name="bluetoothSetup">Bluetooth Setup</string>
     <string name="title_activity_bluetooth_setup">BluetoothSetup</string>
+    <string name="startRoute">Start Route</string>
+    <string name="stopRoute">Stop Route</string>
+    <string name="uadLoc">UAD LOC</string>
 </resources>

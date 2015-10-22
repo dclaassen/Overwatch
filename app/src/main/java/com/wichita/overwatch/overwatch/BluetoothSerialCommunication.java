@@ -31,10 +31,13 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
     BluetoothDevice mmDevice;
     static OutputStream mmOutputStream;//might screw things up
     static InputStream mmInputStream;
+    static String bscTOmaStr = null;
     Thread workerThread;
     byte[] readBuffer;
     int readBufferPosition;
     volatile boolean stopWorker;
+    //public Intent i;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,9 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
         Button closeButton = (Button)findViewById(R.id.close);
         myLabel = (TextView)findViewById(R.id.label);
         myTextbox = (EditText)findViewById(R.id.entry);
+//        Intent i = new Intent(this, MapsActivity.class);
+
+
 
         //Open Button
         openButton.setOnClickListener(new View.OnClickListener() {
@@ -82,11 +88,9 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     sendData();
-                }
-                catch (IOException ex) {
+                } catch (IOException ex) {
                     showMessage("SEND FAILED");
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     showMessage("sendButton.setOnClickListener() E ERROR");
                 }
             }
@@ -132,14 +136,18 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
 
-
         stopWorker = false;
         readBufferPosition = 0;
         readBuffer = new byte[9999];
         workerThread = new Thread(new Runnable() {
             public void run() {
+
+                long delay = 10;
+                long counterDelay = 0;
+
                 while(!Thread.currentThread().isInterrupted() && !stopWorker) {
                     try {
+                        //showMessage("Test");
                         int bytesAvailable = mmInputStream.available();
                         if(bytesAvailable > 0) {
                             byte[] packetBytes = new byte[bytesAvailable];
@@ -150,29 +158,50 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
                                     byte[] encodedBytes = new byte[readBufferPosition];
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, "US-ASCII");
+
                                     readBufferPosition = 0;
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            myLabel.setText(data);
-                                        }
-                                    });
+
+
+                                        //if (counterDelay % delay == 0) {
+                                            handler.post(new Runnable() {
+                                                public void run() {
+                                                    //showMessage(data);
+                                                    //Maybe delay this or something
+                                                    myLabel.setText(data);
+                                                    bscTOmaStr = data;
+                                                    //make String data as an Extra in order to be seen in
+                                                    //other activities
+                                                    //Intent intent = new Intent(BluetoothSerialCommunication.this, MapsActivity.class);
+                                                    //intent.putExtra("data", data);
+                                                    //startActivity(intent);
+                                                    //i.putExtra("dataP", data);
+
+                                                }
+                                            });
+                                        //}
+
+
                                 }
                                 else {
                                     readBuffer[readBufferPosition++] = b;
                                 }
+                                counterDelay++;
                             }
                         }
                     }
                     catch (IOException ex) {
                         stopWorker = true;
                     }
+
                 }
             }
         });
 
         workerThread.start();
     }
+
+
 
     void sendData() throws IOException {
         String msg = myTextbox.getText().toString();

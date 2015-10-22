@@ -1,9 +1,4 @@
-/*
-* To Do
-*   -Fix error when opening the bluetooth connection
-*   -Fix error when closing the bluetooth connection
-*   -
-* */
+
 
 package com.wichita.overwatch.overwatch;
 
@@ -103,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bluetoothSetup:
                 try {
                     bluetoothSetupSwitchScreensClick();
+                    break;
                 } catch (Exception e) {
                     showMessage("bluetoothSetupSwitchScreensClick() E ERROR");
                 }
@@ -127,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } catch (Exception e) {
                     showMessage("plotRouteSwitchScreensClick() E ERROR");
                 }
+            default:
+                showMessage("onClick(View v){ switch(v.getId()) }  default ERROR");
+                break;
         }
     }
 
