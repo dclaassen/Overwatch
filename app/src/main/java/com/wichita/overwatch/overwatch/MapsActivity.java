@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 
 public class MapsActivity extends FragmentActivity {
 
-    private GoogleMap map; // Might be null if Google Play services APK is not available.
+    private GoogleMap map;
     ArrayList<LatLng> markerPoints;
     EditText latlngStrings;
 
@@ -52,17 +52,6 @@ public class MapsActivity extends FragmentActivity {
 
             @Override
             public void onMapClick(LatLng point) {
-                /*
-                * If the maximum amount of markerPoints marked on the map has been reached
-                * Then nothing will happen when the user tries to click to add a point
-                * Map points in the ArrayList
-                * [0-8] User added waypoints
-                * [9] UAD update location point
-                * 10 total available waypoints available without a paid license
-                * */
-                //if(markerPoints.size() >= MAXPOINTS){
-                //    return;
-                //}
 
                 // Adding new item to the ArrayList
                 markerPoints.add(point);
