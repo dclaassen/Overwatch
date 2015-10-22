@@ -1,23 +1,19 @@
 package com.wichita.overwatch.overwatch;
 
-import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,83 +24,52 @@ public class MapsActivity extends FragmentActivity {
     private GoogleMap map; // Might be null if Google Play services APK is not available.
     ArrayList<LatLng> markerPoints;
     EditText latlngStrings;
-    static int MAXPOINTS = 9;//Trust me
-    static int MAXPOINTSWITHUAD = 10;//Trust me
-    Thread workerThread;
-    byte[] readBuffer;
-    int readBufferPosition;
-    volatile boolean stopWorker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         try {
             setContentView(R.layout.activity_maps);
             setUpMapIfNeeded();
-            // Initializing
-            markerPoints = new ArrayList<LatLng>();
+            markerPoints = new ArrayList<>();
             latlngStrings = (EditText) findViewById(R.id.latlngStrings);
             Button sendLatLng = (Button) findViewById(R.id.sendLatLng);
             Button startRoute = (Button) findViewById(R.id.startRoute);
             Button stopRoute = (Button) findViewById(R.id.stopRoute);
             Button uadLoc = (Button) findViewById(R.id.uadLocation);
-            final int uadLocClickCounter = 1;
 
             // Getting reference to SupportMapFragment of the activity_main
-            SupportMapFragment fm = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-
-            // Getting reference to Button
-            //Button btnDraw = (Button)findViewById(R.id.btn_draw);
+            SupportMapFragment fm =
+                    (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
 
             // Getting Map for the SupportMapFragment
             map = fm.getMap();
-
-            // Enable MyLocation Button in the Map
-            ///map.setMyLocationEnabled(true);
 
             // Setting onclick event listener for the map
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
             @Override
             public void onMapClick(LatLng point) {
-
-
                 /*
-                * [0] your location
-                * [1-8] waypoints
+                * If the maximum amount of markerPoints marked on the map has been reached
+                * Then nothing will happen when the user tries to click to add a point
+                * Map points in the ArrayList
+                * [0-8] User added waypoints
                 * [9] UAD update location point
                 * 10 total available waypoints available without a paid license
                 * */
-                if(markerPoints.size() >= MAXPOINTS){
-                    return;
-                }
+                //if(markerPoints.size() >= MAXPOINTS){
+                //    return;
+                //}
 
                 // Adding new item to the ArrayList
                 markerPoints.add(point);
-
-                // Creating MarkerOptions
+                // Adding the new marker to the map
                 MarkerOptions options = new MarkerOptions();
-
-                // Setting the position of the marker
                 options.position(point);
-
-                /**
-                 * For the start location, the color of marker is GREEN and
-                 * for the end location, the color of marker is RED and
-                 * for the rest of markers, the color is AZURE
-                 */
-                /*
-                if(markerPoints.size()==1){
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                }else if(markerPoints.size()==2){
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                }else{
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                }
-                */
-
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                // Add new marker to the Google Map Android API V2
                 map.addMarker(options);
             }
             });
@@ -119,97 +84,59 @@ public class MapsActivity extends FragmentActivity {
 
             // Removes all the points in the ArrayList
             markerPoints.clear();
-            MAXPOINTS = 9;
-            MAXPOINTSWITHUAD = 10;
         }
         });
 
-        // Click event handler for Button btn_draw
-        /*
-        btnDraw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Checks, whether start and end locations are captured
-                if(markerPoints.size() >= 2){
-                    LatLng origin = markerPoints.get(0);
-                    LatLng dest = markerPoints.get(1);
-
-                    // Getting URL to the Google Directions API
-                    //String url = getDirectionsUrl(origin, dest);
-
-                    //DownloadTask downloadTask = new DownloadTask();
-
-                    // Start downloading json data from Google Directions API
-                    //downloadTask.execute(url);
-                }
-
-            }2
-        });
-        */
-        //click event handler for sendLatLng
+        //sendLatLng Button Click
         sendLatLng.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        String str = "Sent:\n";
-                        str += markerPoints.toString();//string used for maps activity printout
-                        //String transmitString;//string that is sent to Arduino via bluetooth
-                        //transmitString = formatLatLngStrings();
-                        //transmitString += "\n";
-                        latlngStrings.setText(str);//send to textbox in activity
-                        transmitStringOnBluetooth();
-                        //try to send transmitString via bluetooth in byte form
-                        /*
-                        try {
-                            BluetoothSerialCommunication.mmOutputStream.write(transmitString.getBytes());
-                        } catch (Exception e) {
-                            showMessage("sendLatLng.setOnClickListener() ERROR");
-                        }
-                        */
-                    }
+            new Button.OnClickListener() {
+                public void onClick(View v) {
+                    String str = "Sent:\n";
+                    //Print to textbox all the latitude longitude strings
+                    str += markerPoints.toString();
+                    latlngStrings.setText(str);
+                    transmitStringOnBluetooth();
                 }
+            }
         );
-        //Start Route Button Click
+
+        //startRoute Button Click
         startRoute.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~startroute");
-                        } catch (IOException ex) {
-                            ;
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e) {
                             showMessage("startRoute.setOnClickListener() E ERROR");
                         }
                     }
                 }
         );
-        //Stop Route Button Click
+
+        //stopRoute Button Click
         stopRoute.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~stoproute");
-                        } catch (IOException ex) {
-                            ;
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e) {
                             showMessage("stopRoute.setOnClickListener() E ERROR");
                         }
                     }
                 }
         );
-        //UAD Loc Button Click
+
+        //uadLoc Button Click
         uadLoc.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~uadlocation");
-                            //receive extra here
-                            //Intent intent = getIntent();
-                            //String dataP = intent.getExtras().getString("")
                             newUADMapPoint();
-
-                        } catch (IOException ex) {
-                            ;
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e) {
                             showMessage("uadLoc.setOnClickListener() E ERROR");
                         }
                     }
@@ -219,8 +146,6 @@ public class MapsActivity extends FragmentActivity {
         catch (Exception e){
             showMessage("Error EXCEPTION e");
         }
-
-
     }//END onCreate()
 
     @Override
@@ -249,25 +174,27 @@ public class MapsActivity extends FragmentActivity {
     public void onSearch(View view) {
         EditText location_tf = (EditText)findViewById(R.id.TFaddress);
         String location = location_tf.getText().toString();
-
         List<Address> addressList = null;//list of addresses
 
-        if (location != null || !location.equals("")) {
-            //Storage class for lat/long
-            Geocoder geocoder = new Geocoder(this);
-            try {
-                //list of addresses
-                addressList = geocoder.getFromLocationName(location, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        //Storage class for lat/long
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            addressList = geocoder.getFromLocationName(location, 1);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        try {
             Address address = addressList.get(0);
             //get lat/lng of the address variable store it in a LatLng object
             LatLng latlng = new LatLng(address.getLatitude(), address.getLongitude());
             //add a marker to the above LatLng object
             map.addMarker(new MarkerOptions().position(latlng).title("Marker"));
             map.animateCamera(CameraUpdateFactory.newLatLng(latlng));
+        }
+        catch (NullPointerException npe) {
+            showMessage("NullPointer reference in onSerach() MapsActivity");
         }
     }
 
@@ -287,150 +214,87 @@ public class MapsActivity extends FragmentActivity {
      * method in {@link #onResume()} to guarantee that it will be called.
      */
     private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
+        // Do a null check to confirm that there is no existing instantiated map
         if (map == null) {
             // Try to obtain the map from the SupportMapFragment.
             map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
-            // Check if we were successful in obtaining the map.
+            // Check if successful in obtaining the map.
             if (map != null) {
                 setUpMap();
             }
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #map} is not null.
-     */
+    //Set up the map
     private void setUpMap() {
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-        //set a marker for your location
         map.setMyLocationEnabled(true);
     }
+
+    //Print messages to the screen as toasts
     private void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
                 theMsg, (Toast.LENGTH_SHORT));
         msg.show();
     }
-    //Method which sends a message, passed to it, out on bluetooth
+
     void sendControllerSignal(String str) throws IOException{
         str += "\n";
         BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
     }
-    //not used
-    public String formatLatLngStrings() {
-        String str = "";
-        LatLng latLng;
-        /*
-        for (int i = 0; i < markerPoints.size(); i++) {
-            latLng = markerPoints.get(i);
-            str += i + 1;
-            str += ",";
-            str += latLng.latitude;
-            str += ",";
-            str += latLng.longitude + "\n";
-            showMessage(str);
-        }
-        */
-        return str;
-    }
-
 
     public void newUADMapPoint() {
         try {
-
-            //LatLng point = new LatLng (double latitude, double longitude);
-            double lat = 1.0;
-            double lng = 2.0;
-            String newPointStr = null;
-
+            String newPointStr;
+            //static string from the bluetooth "listener" thread in BluetoothSerialCommunication
             newPointStr = BluetoothSerialCommunication.bscTOmaStr;
-
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //NEED TO REPLACE WITH PARCED data into lat and lng doubles
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-            //create a new Latng for the incoming point
-            //LatLng point = new LatLng(lat, lng);
-            /*
-            * convert the BluetoothSerialCommunication  thread string to a LatLng point
-            * */
             showMessage(newPointStr);
             LatLng point = stringToLatLng(newPointStr);
-            //LatLng tempPoint;
-            // delete the 10th marker then Add new marker to the Google Map Android API V2
-            //final LatLng pointCheckVar = markerPoints.get(9);
-            // check if this point exists in the new list
-            //if (!markerPoints.contains(pointCheckVar)) {
-            // try {}catch (Exception e) {showMessage("Testing Here");}
 
-            //if (markerPoints.size() > MAXPOINTS) {
-                    /*
-                    * remove the last point because there are more than the maximum allowed points
-                    * MAXPOINTS - 1 in order to get the right index. ith element is  the i - 1 index
-                    * */
-            if (markerPoints.size() == MAXPOINTSWITHUAD) {
-                int tempSize = markerPoints.size();
-
-                markerPoints.remove(tempSize - 1);
-            }
-                        //clear the map of all points
-
-
+            //clear the map of all points
             map.clear();
-            //add points  again
+            //Re add user location
             map.setMyLocationEnabled(true);
-
+            //Re add all the markers for markerPoints
             for (int i = 0; i < markerPoints.size(); i++) {
                 MarkerOptions options1 = new MarkerOptions();
                 options1.position(markerPoints.get(i));
                 options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                 map.addMarker(options1);
             }
-            //}
-            // Adding new item to the ArrayList
-            //int tempSize = markerPoints.size();
-            MAXPOINTSWITHUAD = markerPoints.size() - 1;
-            MAXPOINTS = markerPoints.size() - 2;
-            markerPoints.add(point);
 
-            // Creating MarkerOptions
+            //Add the new UAD loc point requested by the click on Loc
+            markerPoints.add(point);
             MarkerOptions options2 = new MarkerOptions();
-            // Setting the position of the marker then zoom in on that marker
             options2.position(point);
             options2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             map.addMarker(options2);
+            //Zoom the map view onto the new point
             map.animateCamera(CameraUpdateFactory.newLatLng(point));
-
-            /**
-             * For the start location, the color of marker is GREEN and
-             * for the end location, the color of marker is RED and
-             * for the rest of markers, the color is AZURE
-             */
-                /*
-                if(markerPoints.size()==1){
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                }else if(markerPoints.size()==2){
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                }else{
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                }
-                */
-
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             showMessage("newMapPoint() ERROR");
         }
     }
 
+    /*
+    * Method which converts a string to a LatLng object for the purposes of adding a GPS point
+    * requested then received from the UAD to the Google map
+    *
+    * STRING FORMAT INPUT MUST BE:
+    * "Latitude,Longitude"
+    *
+    * It takes the string and tokenizes it using the "," as a delimeter
+    * It then takes the first string token and converts it into a Latitude double variable
+    * It then takes the second string token and converts it inot a Longitude double variable
+    * It then returns a new object of type LatLng, using the new Latitude and Longitude double
+    * variables as parameters, to the calling Class
+    * */
     public LatLng stringToLatLng(String str) {
-        double lat = 0;
-        double lng = 0;
-        String strLat = null;
-        String strLng = null;
+        double lat;
+        double lng;
+        String strLat;
+        String strLng;
 
         StringTokenizer st = new StringTokenizer(str);
         strLat = st.nextToken(",");
@@ -439,31 +303,34 @@ public class MapsActivity extends FragmentActivity {
         lat = Double.parseDouble(strLat);
         lng = Double.parseDouble(strLng);
 
-
         return new LatLng(lat, lng);
     }
 
+    /*
+    Transmits all of the markerPoints' latitude and longitude in String form
+    * "latitude,longitude\n"
+    * */
     public void transmitStringOnBluetooth() {
-        String str = "";
+        String str;
         LatLng latLng;
 
         for (int i = 0; i < markerPoints.size(); i++) {
             str = "";
             latLng = markerPoints.get(i);
+
             str += i + 1;
             str += ",";
             str += latLng.latitude;
             str += ",";
             str += latLng.longitude + "\n";
-            //showMessage(str);
+
             try {
                 BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 showMessage("sendLatLng.setOnClickListener() ERROR");
             }
-
         }
-
     }
 
 }

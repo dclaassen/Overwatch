@@ -213,6 +213,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
 
+        //b button click listener
         b.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -227,28 +228,28 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
 
+        //select button click listener
         select.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~select");
-                        } catch (IOException ex) {
-                            ;
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e) {
                             showMessage("select.setOnClickListener() E ERROR");
                         }
                     }
                 }
         );
 
+        //start button click listener
         start.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~start");
-                        } catch (IOException ex) {
-                            ;
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e) {
                             showMessage("right.setOnClickListener() E ERROR");
                         }
                     }
@@ -257,50 +258,10 @@ public class BluetoothRemoteControl extends AppCompatActivity {
 
     }
 
-    //Method which sends a message, passed to it, out on bluetooth
+    //Method which sends controller signal type message passed to it out on bluetooth to the UAV
     void sendControllerSignal(String str) throws IOException{
         str += "\n";
         BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
-    }
-
-    //Interval setting variables sent to RepeatListener.java GET and SET
-    //Not in use ....
-    int getInitialInterval() {
-        return initialInterval;
-    }
-    void setInitialInterval(int initialIntervalP) {
-        if ( initialIntervalP <= 3000 && initialIntervalP > 0) {
-            initialInterval = initialIntervalP;
-        } else {
-            String theMsg = "Error in setInitalInterval\n";
-            Toast msg = Toast.makeText(getBaseContext(), theMsg, (Toast.LENGTH_SHORT) );
-            msg.show();
-        }
-    }
-    //Interval setting variables sent to RepeatListener.java GET and SET
-    //Not in use .....
-    int getNormalInterval() {
-        return normalInterval;
-    }
-    void setNormalInterval(int normalIntervalP) {
-        if ( normalIntervalP <= 3000 && normalIntervalP > 0) {
-            normalInterval = normalIntervalP;
-        } else {
-            String theMsg = "Error in setNormalInterval\n";
-            Toast msg = Toast.makeText(getBaseContext(), theMsg, (Toast.LENGTH_SHORT) );
-            msg.show();
-        }
-    }
-
-    //not in use
-    void increaseInterval () {
-        setInitialInterval(getInitialInterval() + 100);
-        setNormalInterval(getNormalInterval() + 100);
-    }
-    //not in use
-    void decreaseInterval () {
-        setInitialInterval(getInitialInterval() - 100);
-        setNormalInterval(getNormalInterval() - 100);
     }
 
     //Prints a message to the Android screen (in the form of a toast: black message box)
@@ -309,7 +270,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 theMsg, (Toast.LENGTH_SHORT));
         msg.show();
     }
-    //Methods placed by default
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
