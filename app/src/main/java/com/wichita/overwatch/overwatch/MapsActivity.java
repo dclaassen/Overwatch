@@ -320,7 +320,10 @@ public class MapsActivity extends FragmentActivity {
                 showMessage("sendLatLng.setOnClickListener() ERROR");
             }
         }
+        for (int i =0; i<3; i++);
     }
+
 
 }
 //testing branch commmits
+//test2 now in integrate service
