@@ -1,9 +1,3 @@
-/*
-* To Do
-*   -Put a statement in the catches for the buttons
-*   -
-* */
-
 package com.wichita.overwatch.overwatch;
 
 import android.support.v7.app.AppCompatActivity;
@@ -12,15 +6,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import java.io.IOException;
 
 public class BluetoothRemoteControl extends AppCompatActivity {
-
-    private int initialInterval = 400;
-    private int normalInterval = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +55,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     }
                 }
         );
-        /*//Only for using when repeating signals need sent
+        /*//Only used when repeating signals need sent
         forward.setOnTouchListener(
                 new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
@@ -84,8 +74,6 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~notbackward");
-                        } catch (IOException ex) {
-                            ;
                         } catch (Exception e) {
                             showMessage("backward.setOnClickListener() E ERROR");
                         }
@@ -105,6 +93,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
         /*
+        //Only used when repeating signals need to be sent
         backward.setOnTouchListener(
                 new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
@@ -123,8 +112,6 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~notleft");
-                        } catch (IOException ex) {
-                            ;
                         } catch (Exception e) {
                             showMessage("left.setOnClickListener() E ERROR");
                         }
@@ -144,6 +131,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
         /*
+        //Only used when repeating signals need to be sent
         left.setOnTouchListener(
                 //RepeatListener(int initialInterval, int normalInterval, OnClickListener clickListener)
                 new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
@@ -163,8 +151,6 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~notright");
-                        } catch (IOException ex) {
-                            ;
                         }
                         catch (Exception e) {
                             showMessage("right.setOnClickListener() E ERROR");
@@ -185,6 +171,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
         /*
+        //Only used when repeating signals need to be sent
         right.setOnTouchListener(
                 new RepeatListener(initialInterval, normalInterval, new OnClickListener() {
                     @Override
@@ -204,8 +191,6 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~a");
-                        } catch (IOException ex) {
-                            ;
                         } catch (Exception e) {
                             showMessage("a.setOnClickListener() E ERROR");
                         }
@@ -219,8 +204,6 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                     public void onClick(View v) {
                         try {
                             sendControllerSignal("~b");
-                        } catch (IOException ex) {
-                            ;
                         } catch (Exception e) {
                             showMessage("b.setOnClickListener() E ERROR");
                         }
@@ -258,7 +241,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
 
     }
 
-    //Method which sends controller signal type message passed to it out on bluetooth to the UAV
+    //Method which sends controller signal type message passed to it out on bluetooth to the UAVAP
     void sendControllerSignal(String str) throws IOException{
         str += "\n";
         BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());

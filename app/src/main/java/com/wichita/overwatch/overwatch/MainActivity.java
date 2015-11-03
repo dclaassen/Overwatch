@@ -1,5 +1,3 @@
-
-
 package com.wichita.overwatch.overwatch;
 
 import android.content.Intent;
@@ -56,28 +54,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+    //Method which prints a message in the form of a toast (Black Message Box) to the screen
     private void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
                 theMsg, (Toast.LENGTH_SHORT));
         msg.show();
     }
 
-    //Create the link to and start the Bluetooth Setup screen/activity
+    //Method which creates the link to and start the Bluetooth Setup screen/activity
     public void bluetoothSetupSwitchScreensClick() throws Exception {
         Intent bluetoothSetupIntent = new Intent(MainActivity.this, BluetoothSetup.class);
         startActivity(bluetoothSetupIntent);
     }
-    //create the link to and start the Bluetooth Serial Communication screen/activity
+    //Method which creates the link to and start the Bluetooth Serial Communication screen/activity
     public void bluetoothSerialCommunicationSwitchScreensClick() throws Exception{
         Intent bluetoothSerialCommunicationIntent = new Intent(MainActivity.this, BluetoothSerialCommunication.class);
         startActivity(bluetoothSerialCommunicationIntent);
     }
-    //create the link to and start the Bluetooth Remote Control screen/activity
+    //Method which creates the link to and start the Bluetooth Remote Control screen/activity
     public void bluetoothRemoteControlSwitchScreensClick() throws Exception{
         Intent bluetoothRemoteControlIntent = new Intent(MainActivity.this, BluetoothRemoteControl.class);
         startActivity(bluetoothRemoteControlIntent);
     }
-    //create the link to and start the Bluetooth Remote Control screen/activity
+    //Method which creates the link to and start the Bluetooth Remote Control screen/activity
     public void plotRouteSwitchScreensClick() throws Exception{
         try {
             Intent plotRouteIntent = new Intent(MainActivity.this, MapsActivity.class);
@@ -91,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //Chooses the appropriate function to execute depending on which button has been clicked
+    //Chooses the appropriate onClick method to execute depending on which button has been clicked
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
