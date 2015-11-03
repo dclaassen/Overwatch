@@ -83,6 +83,12 @@ public class MapsActivity extends FragmentActivity {
                     String str = "Sent:\n";
                     //Print to textbox all the latitude longitude strings
                     str += markerPoints.toString();
+                    try {
+                        str = markerPointsFormatString();
+                    }
+                    catch (Exception e) {
+                        showMessage("markerPointsFormatString() E ERROR");
+                    }
                     latlngStrings.setText(str);
                     transmitStringOnBluetooth();
                 }
@@ -94,6 +100,7 @@ public class MapsActivity extends FragmentActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
+                            //send the startroute command to the UADAP
                             sendControllerSignal("~startroute");
                         }
                         catch (Exception e) {
@@ -108,6 +115,7 @@ public class MapsActivity extends FragmentActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
+                            //send the stoproute command to the UADAP
                             sendControllerSignal("~stoproute");
                         }
                         catch (Exception e) {
@@ -122,7 +130,9 @@ public class MapsActivity extends FragmentActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
+                            //send the uadlocation command to the UADAP
                             sendControllerSignal("~uadlocation");
+                            //Ask for, receive, and then add the UAD's current location to the map
                             newUADMapPoint();
                         }
                         catch (Exception e) {
@@ -151,6 +161,7 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
+    //Method which zooms the user's view when the zoom button is clicked
     public void onZoom(View view) {
         if (view.getId() == R.id.Bzoomin) {
             map.animateCamera(CameraUpdateFactory.zoomIn());
@@ -160,6 +171,7 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
+    //Method which searches google maps for addresses and commmon search results
     public void onSearch(View view) {
         EditText location_tf = (EditText)findViewById(R.id.TFaddress);
         String location = location_tf.getText().toString();
@@ -215,36 +227,42 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    //Set up the map
+    //Method which sets up the map
     private void setUpMap() {
         map.setMyLocationEnabled(true);
     }
 
-    //Print messages to the screen as toasts
+    //Method which prints messages to the screen called "toasts" (the black box message screens)
     private void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
                 theMsg, (Toast.LENGTH_SHORT));
         msg.show();
     }
 
+    //Method which sends a properly formatted string to the bluetooth "listener" thread
     void sendControllerSignal(String str) throws IOException{
         str += "\n";
         BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
     }
 
+    //Method which requests, receives, then adds the UAD's location to the map.
     public void newUADMapPoint() {
         try {
             String newPointStr;
-            //static string from the bluetooth "listener" thread in BluetoothSerialCommunication
+            /*
+            * BluetoothSerialCommunication.bscTOmaStr explanation:
+            * Static "global" storage space which is accessible to the entire application. It is a
+            * static string from the bluetooth "listener" thread in BluetoothSerialCommunication
+            */
             newPointStr = BluetoothSerialCommunication.bscTOmaStr;
             showMessage(newPointStr);
             LatLng point = stringToLatLng(newPointStr);
 
-            //clear the map of all points
+            //clear the map of all points in order to add a new point
             map.clear();
             //Re add user location
             map.setMyLocationEnabled(true);
-            //Re add all the markers for markerPoints
+            //Re add all the old markers for markerPoints to the map
             for (int i = 0; i < markerPoints.size(); i++) {
                 MarkerOptions options1 = new MarkerOptions();
                 options1.position(markerPoints.get(i));
@@ -296,9 +314,13 @@ public class MapsActivity extends FragmentActivity {
     }
 
     /*
-    Transmits all of the markerPoints' latitude and longitude in String form
-    * "latitude,longitude\n"
-    * */
+    * Method which sends a properly formatted string of all the "latitude,longitude" strings
+    * which are currently present in the ArrayList containing all the markerPoints currently
+    * on the map in the order in which they were added by the user
+    *
+    * FORMAT of each entry is:
+    *   "latitude,longitude\n"
+    */
     public void transmitStringOnBluetooth() {
         String str;
         LatLng latLng;
@@ -320,6 +342,22 @@ public class MapsActivity extends FragmentActivity {
                 showMessage("sendLatLng.setOnClickListener() ERROR");
             }
         }
+    }
+
+    public String markerPointsFormatString() throws Exception {
+        String str = "";
+        LatLng latLng;
+
+        for (int i = 0; i < markerPoints.size(); i++) {
+            latLng = markerPoints.get(i);
+            str += i + 1;
+            str += ":\t";
+            str += latLng.latitude;
+            str += ",";
+            str += latLng.longitude + "\n";
+        }
+
+        return str;
     }
 
 }
