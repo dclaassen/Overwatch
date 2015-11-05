@@ -37,4 +37,6 @@
     <string name="stop">Stop</string>
     <string name="loc">Loc</string>
     <string name="startSmall">Start</string>
+    <string name="bSXOpen">OPEN</string>
+    <string name="enterAddressOrSearch">Enter Address or Search</string>
 </resources>

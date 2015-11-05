@@ -1,7 +1,12 @@
 package com.wichita.overwatch.overwatch;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,11 +24,59 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/*
+* Service Connection Step 04:
+* import the BluetoothConnectionService and the BluetoothConnectionServiceBinder
+* */
+import com.wichita.overwatch.overwatch.BluetoothConnectionService.BluetoothConnectionServiceBinder;
+
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap map;
     ArrayList<LatLng> markerPoints;
     EditText latlngStrings;
+
+    /*
+    * Service Connection Step 05:
+    * create a service object to connect to
+    * create a test variable to determine if the activity has been bound to the service
+    * */
+    static BluetoothConnectionService bluetoothConnectionServiceGMA;
+    boolean isBound = false;
+    //END  Service Connection Step 05:
+
+    /*
+    * Service Connection Step 06 - 08:
+    * Service Connection Step 06:
+    * create a connection
+    * */
+    private ServiceConnection bluetoothConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            /*
+            * Service Connection Step 07:
+            * on connect do this....
+            * A:    create a binder
+            * B:    bind the service
+            * C:    set the test variable for boundness to true
+            * */
+            BluetoothConnectionServiceBinder binder = (BluetoothConnectionServiceBinder) service;
+            bluetoothConnectionServiceGMA = BluetoothSetup.bluetoothConnectionService01;
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            /*
+            * Service Connection Step 08:
+            * on disconnect do this
+            * A:    set the  test variable for boundedness to false
+            * */
+            isBound = false;
+
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +92,15 @@ public class MapsActivity extends FragmentActivity {
             Button startRoute = (Button) findViewById(R.id.startRoute);
             Button stopRoute = (Button) findViewById(R.id.stopRoute);
             Button uadLoc = (Button) findViewById(R.id.uadLocation);
+
+            /*
+            * Service Connection Step 09:
+            * A:    create intent to bind
+            * B:    bind the intent, connection, context
+            * */
+            Intent intent01 = new Intent(this, BluetoothConnectionService.class);
+            bindService(intent01, bluetoothConnection, Context.BIND_AUTO_CREATE);
+            //Service Connection END Step 09:
 
             // Getting reference to SupportMapFragment of the activity_main
             SupportMapFragment fm =
@@ -101,7 +163,7 @@ public class MapsActivity extends FragmentActivity {
                     public void onClick(View v) {
                         try {
                             //send the startroute command to the UADAP
-                            sendControllerSignal("~startroute");
+                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~startroute");
                         }
                         catch (Exception e) {
                             showMessage("startRoute.setOnClickListener() E ERROR");
@@ -116,7 +178,7 @@ public class MapsActivity extends FragmentActivity {
                     public void onClick(View v) {
                         try {
                             //send the stoproute command to the UADAP
-                            sendControllerSignal("~stoproute");
+                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~stoproute");
                         }
                         catch (Exception e) {
                             showMessage("stopRoute.setOnClickListener() E ERROR");
@@ -131,7 +193,7 @@ public class MapsActivity extends FragmentActivity {
                     public void onClick(View v) {
                         try {
                             //send the uadlocation command to the UADAP
-                            sendControllerSignal("~uadlocation");
+                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~uadlocation");
                             //Ask for, receive, and then add the UAD's current location to the map
                             newUADMapPoint();
                         }
@@ -239,12 +301,6 @@ public class MapsActivity extends FragmentActivity {
         msg.show();
     }
 
-    //Method which sends a properly formatted string to the bluetooth "listener" thread
-    void sendControllerSignal(String str) throws IOException{
-        str += "\n";
-        BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
-    }
-
     //Method which requests, receives, then adds the UAD's location to the map.
     public void newUADMapPoint() {
         try {
@@ -254,7 +310,7 @@ public class MapsActivity extends FragmentActivity {
             * Static "global" storage space which is accessible to the entire application. It is a
             * static string from the bluetooth "listener" thread in BluetoothSerialCommunication
             */
-            newPointStr = BluetoothSerialCommunication.bscTOmaStr;
+            newPointStr = bluetoothConnectionServiceGMA.storeIncomingData;;
             showMessage(newPointStr);
             LatLng point = stringToLatLng(newPointStr);
 
@@ -336,7 +392,7 @@ public class MapsActivity extends FragmentActivity {
             str += latLng.longitude + "\n";
 
             try {
-                BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
+                bluetoothConnectionServiceGMA.mmOutputStream.write(str.getBytes());
             }
             catch (Exception e) {
                 showMessage("sendLatLng.setOnClickListener() ERROR");

@@ -1,5 +1,10 @@
 package com.wichita.overwatch.overwatch;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,14 +13,55 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.IOException;
-
 public class BluetoothRemoteControl extends AppCompatActivity {
+
+    /*
+    * Step 05:
+    * create a service object to connect to
+    * create a test variable to determine if the activity has been bound to the service
+    * */
+    static BluetoothConnectionService bluetoothConnectionServiceBRC;
+    boolean isBound = false;
+
+    /*
+    * Step 06:
+    * create a connection
+    * */
+    private ServiceConnection bluetoothConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            /*
+            * Step 07:
+            * on connect do this....
+            * A:    create a binder
+            * B:    bind the service
+            * C:    set the test variable for boundness to true
+            * */
+            //BluetoothConnectionServiceBinder binder = (BluetoothConnectionServiceBinder) service;
+            bluetoothConnectionServiceBRC = BluetoothSetup.bluetoothConnectionService01;
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            /*
+            * Step 08:
+            * on disconnect do this
+            * A:    set the  test variable for boundedness to false
+            * */
+            isBound = false;
+
+        }
+    };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_remote_control);
+
+
 
         Button forward = (Button)findViewById(R.id.forward);
         Button backward = (Button)findViewById(R.id.backward);
@@ -27,6 +73,15 @@ public class BluetoothRemoteControl extends AppCompatActivity {
         Button start = (Button)findViewById(R.id.start);
 
         /*
+        * Step 09:
+        * A:    create intent to bind
+        * B:    bind the intent, connection, context
+        * */
+        Intent intent01 = new Intent(this, BluetoothConnectionService.class);
+        bindService(intent01, bluetoothConnection, Context.BIND_AUTO_CREATE);
+        //END Step 09:
+
+        /*
         * Each of the forward, backward, left, and right buttons have remote control style controls
         * On pressing button the action command is sent ex) forward
         * On releasing button the halt command is sent ex) notforward
@@ -36,7 +91,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~notforward");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~notforward");
                         } catch (Exception e) {
                             showMessage("forward.setOnClickListener() E ERROR");
                         }
@@ -47,7 +102,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnLongClickListener() {
                     public boolean onLongClick(View v) {
                         try {
-                            sendControllerSignal("~forward");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~forward");
                         } catch (Exception e) {
                             showMessage("forward.setOnLongClickListener() E ERROR");
                         }
@@ -73,7 +128,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~notbackward");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~notbackward");
                         } catch (Exception e) {
                             showMessage("backward.setOnClickListener() E ERROR");
                         }
@@ -84,7 +139,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnLongClickListener() {
                     public boolean onLongClick(View v) {
                         try {
-                            sendControllerSignal("~backward");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~backward");
                         } catch (Exception e) {
                             showMessage("backward.setOnLongClickListener() E ERROR");
                         }
@@ -111,7 +166,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~notleft");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~notleft");
                         } catch (Exception e) {
                             showMessage("left.setOnClickListener() E ERROR");
                         }
@@ -122,7 +177,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnLongClickListener() {
                     public boolean onLongClick(View v) {
                         try {
-                            sendControllerSignal("~left");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~left");
                         } catch (Exception e) {
                             showMessage("left.setOnLongClickListener() E ERROR");
                         }
@@ -150,7 +205,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~notright");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~notright");
                         }
                         catch (Exception e) {
                             showMessage("right.setOnClickListener() E ERROR");
@@ -162,7 +217,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnLongClickListener() {
                     public boolean onLongClick(View v) {
                         try {
-                            sendControllerSignal("~right");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~right");
                         } catch (Exception e) {
                             showMessage("right.setOnLongClickListener() E ERROR");
                         }
@@ -190,7 +245,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~a");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~a");
                         } catch (Exception e) {
                             showMessage("a.setOnClickListener() E ERROR");
                         }
@@ -203,7 +258,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~b");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~b");
                         } catch (Exception e) {
                             showMessage("b.setOnClickListener() E ERROR");
                         }
@@ -216,7 +271,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~select");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~select");
                         }
                         catch (Exception e) {
                             showMessage("select.setOnClickListener() E ERROR");
@@ -230,7 +285,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
-                            sendControllerSignal("~start");
+                            bluetoothConnectionServiceBRC.sendDataOverBluetooth("~start");
                         }
                         catch (Exception e) {
                             showMessage("right.setOnClickListener() E ERROR");
@@ -239,12 +294,6 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
 
-    }
-
-    //Method which sends controller signal type message passed to it out on bluetooth to the UAVAP
-    void sendControllerSignal(String str) throws IOException{
-        str += "\n";
-        BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
     }
 
     //Prints a message to the Android screen (in the form of a toast: black message box)
