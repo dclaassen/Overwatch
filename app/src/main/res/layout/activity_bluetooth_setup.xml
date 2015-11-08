@@ -14,7 +14,8 @@
         android:layout_alignBottom="@+id/bSXCloseButton"
         android:layout_toRightOf="@+id/bSXCloseButton"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="#ffffff" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:text="@string/bSXOpen"
         android:id="@+id/bSXOpenButton"
-        android:layout_alignTop="@+id/bSXCloseButton"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -30,10 +31,30 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CLOSE"
+        android:text="@string/close"
         android:id="@+id/bSXCloseButton"
-        android:layout_marginBottom="16dp"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/bSXOpenButton"
         android:layout_toEndOf="@+id/bSXOpenButton" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/discover"
+        android:id="@+id/bsXDiscoverButton"
+        android:layout_above="@+id/bSXOpenButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/tv_status"
+        android:layout_alignBottom="@+id/bSXCloseButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="#ffffff" />
+
 </RelativeLayout>

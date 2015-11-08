@@ -33,7 +33,7 @@ import com.wichita.overwatch.overwatch.BluetoothConnectionService.BluetoothConne
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap map;
-    ArrayList<LatLng> markerPoints;
+    static ArrayList<LatLng> markerPoints;
     EditText latlngStrings;
 
     /*
@@ -213,6 +213,7 @@ public class MapsActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        map.setMyLocationEnabled(true);
     }
 
     public void changeType(View view) {
@@ -409,7 +410,7 @@ public class MapsActivity extends FragmentActivity {
             str += i + 1;
             str += ":\t";
             str += latLng.latitude;
-            str += ",";
+            str += "\n\t\t";
             str += latLng.longitude + "\n";
         }
 

@@ -1,28 +1,55 @@
 package com.wichita.overwatch.overwatch;
 
-
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
-import java.io.IOException;
+import android.widget.Toast;
+
 /*
 * Service Connection Step 04:
 * import the BluetoothConnectionService and the BluetoothConnectionServiceBinder
 * */
 import com.wichita.overwatch.overwatch.BluetoothConnectionService.BluetoothConnectionServiceBinder;
 
+import java.io.IOException;
+
 public class BluetoothSetup extends AppCompatActivity {
 
     TextView bSJTextView01;
+
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 2;
+    private static final int REQUEST_ENABLE_BT = 3;
+
+    // Name of the connected device
+    private String mConnectedDeviceName = null;
+
+    // Local Bluetooth adapter
+    private BluetoothAdapter mBluetoothAdapter = null;
+
+    //Debugging
+    private static final String TAG = "BluetoothChat";
+    private static final boolean D = true;
+
+    boolean getname = false;
 
     /*
     * Service Connection Step 05:
@@ -69,7 +96,7 @@ public class BluetoothSetup extends AppCompatActivity {
     * Service Connection Step 10:
     * A:    create methods that the BluetoothSetup will use
     *       ex) public void serviceMethod(View view) //pass the views for the UI changes
-z    * B:    use bluetoothConnectionServiceLocalVariable.someMethod() to use the service
+    * B:    use bluetoothConnectionServiceLocalVariable.someMethod() to use the service
     *   Reasoning:
     *   Do UI modification in Activity while the service continues to run its threads. All
     *   activities bound to this service will keep the Bluetooth connection alive and accessible to
@@ -78,9 +105,9 @@ z    * B:    use bluetoothConnectionServiceLocalVariable.someMethod() to use the
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_setup);
-
         /*
         * Service Connection Step 09:
         * A:    create intent to bind
@@ -93,21 +120,45 @@ z    * B:    use bluetoothConnectionServiceLocalVariable.someMethod() to use the
         bSJTextView01 = (TextView)findViewById(R.id.bSXTextView01);
         Button bSJOpenButton = (Button)findViewById(R.id.bSXOpenButton);
         Button bSJCloseButton = (Button)findViewById(R.id.bSXCloseButton);
+        Button bSJDiscoverButton = (Button)findViewById(R.id.bsXDiscoverButton);
+
+        bluetoothConnectionService01.mBluetoothAdapter	= BluetoothAdapter.getDefaultAdapter();
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        }
+
+        //bSJDiscover button's click listener: Initialization, Construction, Method
+        bSJDiscoverButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                try {
+                    //showMessage("test");
+                    Intent serverIntent = new Intent(BluetoothSetup.this, DeviceListActivity.class);
+
+                    startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                } catch (Exception e) {
+                    showMessage("bSJDiscoverButton.setOnClickListener() E ERROR");
+                }
+            }
+        });//END bSJDiscover onClickListener
 
         //bSJOPEN button's click listener: Initialization, Construction, Method
         bSJOpenButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
+
                     bluetoothConnectionService01.findBT();
                     bSJTextView01.setText("Bluetooth Device Found");
                     bluetoothConnectionService01.openBT();
                     bSJTextView01.setText("Bluetooth Opened");
-                }
-                catch (IOException ex) {
-                    bluetoothConnectionService01.showMessage("openButton.setOnClickListener IO ERROR");
-                }
-                catch (Exception e) {
-                    bluetoothConnectionService01.showMessage("openButton.setOnClickListener() E ERROR");
+                } catch (Exception e) {
+                    showMessage("openButton.setOnClickListener() E ERROR");
                 }
             }
         });
@@ -116,20 +167,63 @@ z    * B:    use bluetoothConnectionServiceLocalVariable.someMethod() to use the
         bSJCloseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
+
                     bluetoothConnectionService01.closeBT();
                     bSJTextView01.setText("Bluetooth Closed");
+                } catch (Exception e) {
+                    showMessage("closeButton.setOnClickListener() E ERROR");
                 }
-                catch (IOException ex) {
-                    bluetoothConnectionService01.showMessage("closeButton.setOnClickListener IO ERROR");
-                }
-                catch (Exception e) {
-                    bluetoothConnectionService01.showMessage("closeButton.setOnClickListener() E ERROR");
+                //Turn off Bluetooth Adapter on Bluetooth
+                try {
+                    bluetoothConnectionService01.mBluetoothAdapter.disable();
+                    bSJTextView01.setText("Bluetooth Off");
+                } catch (Exception e) {
+                    showMessage("bluetoothConnectionService01.mBluetoothAdapter.disable() E ERROR");
                 }
             }
         });
 
     }//END onCreate
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(D) Log.d(TAG, "onActivityResult " + resultCode);
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    getname=false;
+                    bSJTextView01.setText(data.toString());
+                    connectDevice(data);
+                }
+                break;
+        }
+    }
+
+    private void connectDevice(Intent data) {
+        // Get the device MAC address
+        String address = data.getExtras()
+                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+        // Get the BluetoothDevice object
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        bluetoothConnectionService01.mmDevice = mBluetoothAdapter.getRemoteDevice(address);
+
+    }
+
+    private void hideVirturalKeyboard(){
+        try{
+            InputMethodManager inputManager = (InputMethodManager)
+                    this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }catch(Exception e){}
+    }
+
+    //Method which prints messages to the screen called "toasts" (the black box message screens)
+    private void showMessage(String theMsg) {
+        Toast msg = Toast.makeText(getBaseContext(),
+                theMsg, (Toast.LENGTH_SHORT));
+        msg.show();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

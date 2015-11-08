@@ -14,53 +14,49 @@
         android:text="@string/forward"
         android:id="@+id/forward"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/right"
-        android:layout_alignEnd="@+id/right"
-        android:layout_marginRight="42dp"
-        android:layout_marginEnd="42dp" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/left"
-        android:id="@+id/left"
-        android:layout_below="@+id/forward"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/left"
+        android:id="@+id/left"
+        android:layout_toLeftOf="@+id/right"
+        android:layout_below="@+id/forward" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/right"
         android:id="@+id/right"
-        android:layout_above="@+id/backward"
-        android:layout_toRightOf="@+id/left"
-        android:layout_toEndOf="@+id/left" />
+        android:layout_alignTop="@+id/left"
+        android:layout_toLeftOf="@+id/b" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/backward"
         android:id="@+id/backward"
-        android:layout_below="@+id/left"
         android:layout_alignLeft="@+id/forward"
-        android:layout_alignStart="@+id/forward" />
+        android:layout_alignStart="@+id/forward"
+        android:layout_below="@+id/forward" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/a"
         android:id="@+id/a"
-        android:layout_alignTop="@+id/b"
-        android:layout_toLeftOf="@+id/b"
-        android:layout_toStartOf="@+id/b" />
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/b"
+        android:layout_alignStart="@+id/b" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/b"
         android:id="@+id/b"
-        android:layout_above="@+id/backward"
+        android:layout_below="@+id/a"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -70,8 +66,7 @@
         android:text="@string/select"
         android:id="@+id/select"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/start"
-        android:layout_toStartOf="@+id/start" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -79,6 +74,5 @@
         android:text="@string/start"
         android:id="@+id/start"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/a"
-        android:layout_toStartOf="@+id/a" />
+        android:layout_toEndOf="@+id/select" />
 </RelativeLayout>
