@@ -138,9 +138,16 @@ public class BluetoothSetup extends AppCompatActivity {
         bSJDiscoverButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    //showMessage("test");
+                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                    if (mBluetoothAdapter == null) {
+                        showMessage("Bluetooth is not available");
+                        finish();
+                        return;
+                    } else if (!mBluetoothAdapter.isEnabled()) {
+                        Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+                    }
                     Intent serverIntent = new Intent(BluetoothSetup.this, DeviceListActivity.class);
-
                     startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
                 } catch (Exception e) {
                     showMessage("bSJDiscoverButton.setOnClickListener() E ERROR");
@@ -156,7 +163,10 @@ public class BluetoothSetup extends AppCompatActivity {
                     bluetoothConnectionService01.findBT();
                     bSJTextView01.setText("Bluetooth Device Found");
                     bluetoothConnectionService01.openBT();
-                    bSJTextView01.setText("Bluetooth Opened");
+                    bSJTextView01.setText(
+                                    "Bluetooth Opened" +
+                                    "\nName: " + bluetoothConnectionService01.mmDevice.getName() +
+                                    "\nAddress: " + bluetoothConnectionService01.mmDevice.getAddress());
                 } catch (Exception e) {
                     showMessage("openButton.setOnClickListener() E ERROR");
                 }
@@ -192,7 +202,8 @@ public class BluetoothSetup extends AppCompatActivity {
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     getname=false;
-                    bSJTextView01.setText(data.toString());
+                    bSJTextView01.setText("Selected Decive MAC Address\n" + data.getExtras()
+                            .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS));
                     connectDevice(data);
                 }
                 break;
