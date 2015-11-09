@@ -39,9 +39,31 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="@string/discoverDevices"
+        android:text="@string/selectDevie"
         android:id="@+id/bsXDiscoverButton"
+        android:layout_below="@+id/instruction02"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/selectBluetoothDevice"
+        android:id="@+id/instruction01"
+        android:textColor="#ffffff"
         android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="2.Open Bluetooth Device"
+        android:id="@+id/instruction02"
+        android:textColor="#ffffff"
+        android:layout_below="@+id/instruction01"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

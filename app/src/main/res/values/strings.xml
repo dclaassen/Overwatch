@@ -53,4 +53,6 @@
     <string name="newDevices">New Devices</string>
     <string name="pairedDevices">Paired Devices</string>
     <string name="discoverDevices">Discover Devices</string>
+    <string name="selectDevie">Select Device</string>
+    <string name="selectBluetoothDevice">1.Select Bluetooth Device</string>
 </resources>

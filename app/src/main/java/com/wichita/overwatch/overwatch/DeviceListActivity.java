@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -46,8 +45,11 @@ public class DeviceListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Setup the window
         setContentView(R.layout.activity_device_list);
+
         // Set result CANCELED in case the user backs out
+        //Reason: startActivityForResult has been called to initiate this activity
         setResult(Activity.RESULT_CANCELED);
+
         // Initialize the button to perform device discovery
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new OnClickListener() {
@@ -66,18 +68,22 @@ public class DeviceListActivity extends AppCompatActivity {
         ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
         pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setOnItemClickListener(mDeviceClickListener);
+
         // Find and set up the ListView for newly discovered devices
         ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
+
         // Register for broadcasts when a device is discovered
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         this.registerReceiver(mReceiver, filter);
+
         // Register for broadcasts when discovery has finished
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         this.registerReceiver(mReceiver, filter);
         // Get the local Bluetooth adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+
         // Get a set of currently paired devices
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
         // If there are paired devices, add each one to the ArrayAdapter
@@ -106,9 +112,8 @@ public class DeviceListActivity extends AppCompatActivity {
         this.unregisterReceiver(mReceiver);
     }
 
-    /**
-     * Start device discover with the BluetoothAdapter
-     */
+
+    //Start device discover with the BluetoothAdapter
     private void doDiscovery() {
         if (D) Log.d(TAG, "doDiscovery()");
 
