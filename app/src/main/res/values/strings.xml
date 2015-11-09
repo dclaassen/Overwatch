@@ -52,4 +52,5 @@
     <string name="scan2">Scan</string>
     <string name="newDevices">New Devices</string>
     <string name="pairedDevices">Paired Devices</string>
+    <string name="discoverDevices">Discover Devices</string>
 </resources>

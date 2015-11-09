@@ -155,14 +155,16 @@ public class BluetoothSetup extends AppCompatActivity {
                     } else if (!mBluetoothAdapter.isEnabled()) {
                         Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+                        bSJTextView01.setText("After Enabling Bluetooth\nTry Open Again");
+                        return;
                     }
                     bluetoothConnectionService01.openBT();
                     bSJTextView01.setText(
                                     "Bluetooth Opened" +
-                                    "\nYour Device:\n" + bluetoothConnectionService01.mBluetoothAdapter.getName() +
-                                    "\nYour MAC:\n" + bluetoothConnectionService01.mBluetoothAdapter.getAddress() +
-                                    "\nConnect Device:\n" + bluetoothConnectionService01.mmDevice.getName() +
-                                    "\nConnect MAC:\n" + bluetoothConnectionService01.mmDevice.getAddress());
+                                    "\nYour Device:\t" + bluetoothConnectionService01.mBluetoothAdapter.getName() +
+                                    "\nYour MAC:\t" + bluetoothConnectionService01.mBluetoothAdapter.getAddress() +
+                                    "\nConnected Device:\t" + bluetoothConnectionService01.mmDevice.getName() +
+                                    "\nConnected MAC:\t" + bluetoothConnectionService01.mmDevice.getAddress());
                 } catch (Exception e) {
                     showMessage("openButton.setOnClickListener() E ERROR");
                 }

@@ -8,53 +8,41 @@
     android:background="@drawable/wsu01">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="225dp"
         android:layout_height="wrap_content"
         android:id="@+id/bSXTextView01"
-        android:layout_alignBottom="@+id/bSXCloseButton"
-        android:layout_toRightOf="@+id/bSXCloseButton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="@string/bSXOpen"
         android:id="@+id/bSXOpenButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="@string/close"
         android:id="@+id/bSXCloseButton"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/bSXOpenButton"
-        android:layout_toEndOf="@+id/bSXOpenButton" />
+        android:layout_below="@+id/bSXOpenButton"
+        android:layout_alignLeft="@+id/bSXOpenButton"
+        android:layout_alignStart="@+id/bSXOpenButton" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="@string/discover"
+        android:text="@string/discoverDevices"
         android:id="@+id/bsXDiscoverButton"
-        android:layout_above="@+id/bSXOpenButton"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:id="@+id/tv_status"
-        android:layout_alignBottom="@+id/bSXCloseButton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textColor="#ffffff" />
 
 </RelativeLayout>
