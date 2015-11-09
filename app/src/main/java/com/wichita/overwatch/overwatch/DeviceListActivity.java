@@ -138,7 +138,6 @@ public class DeviceListActivity extends AppCompatActivity {
             String info = ((TextView) v).getText().toString();
 
             String address = info.substring(info.length() - 17);
-            showMessage(address);
 
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();

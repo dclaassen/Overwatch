@@ -2,7 +2,6 @@ package com.wichita.overwatch.overwatch;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,28 +23,20 @@ import android.widget.Toast;
 * */
 import com.wichita.overwatch.overwatch.BluetoothConnectionService.BluetoothConnectionServiceBinder;
 
-import java.io.IOException;
-
 public class BluetoothSetup extends AppCompatActivity {
 
     TextView bSJTextView01;
-
-    // Key names received from the BluetoothChatService Handler
-    public static final String DEVICE_NAME = "device_name";
-    public static final String TOAST = "toast";
 
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
 
-    // Name of the connected device
-    private String mConnectedDeviceName = null;
 
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
 
     //Debugging
-    private static final String TAG = "BluetoothChat";
+    private static final String TAG = "Bluetooth";
     private static final boolean D = true;
 
     boolean getname = false;
@@ -160,13 +150,19 @@ public class BluetoothSetup extends AppCompatActivity {
             public void onClick(View v) {
                 try {
 
-                    bluetoothConnectionService01.findBT();
-                    bSJTextView01.setText("Bluetooth Device Found");
+                    if (mBluetoothAdapter == null) {
+                        showMessage("No bluetooth adapter available");
+                    } else if (!mBluetoothAdapter.isEnabled()) {
+                        Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+                    }
                     bluetoothConnectionService01.openBT();
                     bSJTextView01.setText(
                                     "Bluetooth Opened" +
-                                    "\nName: " + bluetoothConnectionService01.mmDevice.getName() +
-                                    "\nAddress: " + bluetoothConnectionService01.mmDevice.getAddress());
+                                    "\nYour Device:\n" + bluetoothConnectionService01.mBluetoothAdapter.getName() +
+                                    "\nYour MAC:\n" + bluetoothConnectionService01.mBluetoothAdapter.getAddress() +
+                                    "\nConnect Device:\n" + bluetoothConnectionService01.mmDevice.getName() +
+                                    "\nConnect MAC:\n" + bluetoothConnectionService01.mmDevice.getAddress());
                 } catch (Exception e) {
                     showMessage("openButton.setOnClickListener() E ERROR");
                 }
@@ -177,7 +173,10 @@ public class BluetoothSetup extends AppCompatActivity {
         bSJCloseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-
+                    if (!mBluetoothAdapter.isEnabled()){
+                        showMessage("Bluetooth is not on");
+                        return;
+                    }
                     bluetoothConnectionService01.closeBT();
                     bSJTextView01.setText("Bluetooth Closed");
                 } catch (Exception e) {
@@ -202,9 +201,10 @@ public class BluetoothSetup extends AppCompatActivity {
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     getname=false;
-                    bSJTextView01.setText("Selected Decive MAC Address\n" + data.getExtras()
-                            .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS));
-                    connectDevice(data);
+                    bSJTextView01.setText(
+                            "Selected Device" +
+                            "\nMAC Address:\t" + data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS));
+                                connectDevice(data);
                 }
                 break;
         }
@@ -215,18 +215,9 @@ public class BluetoothSetup extends AppCompatActivity {
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        bluetoothConnectionService01.mmDevice = mBluetoothAdapter.getRemoteDevice(address);
+        //BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        bluetoothConnectionService01.mmDevice = bluetoothConnectionService01.mBluetoothAdapter.getRemoteDevice(address);
 
-    }
-
-    private void hideVirturalKeyboard(){
-        try{
-            InputMethodManager inputManager = (InputMethodManager)
-                    this.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(),
-                    InputMethodManager.HIDE_NOT_ALWAYS);
-        }catch(Exception e){}
     }
 
     //Method which prints messages to the screen called "toasts" (the black box message screens)

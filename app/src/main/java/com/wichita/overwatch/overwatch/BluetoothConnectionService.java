@@ -37,9 +37,6 @@ public class BluetoothConnectionService extends Service {
     * */
     private final IBinder bluetoothConnectionServiceBinder = new BluetoothConnectionServiceBinder();
 
-    static BroadcastReceiver mReceiver;
-    static ArrayAdapter mArrayAdapter;
-
     static BluetoothAdapter mBluetoothAdapter;
     static BluetoothSocket mmSocket;
     static BluetoothDevice mmDevice;
@@ -50,9 +47,6 @@ public class BluetoothConnectionService extends Service {
     static int readBufferPosition;
     static volatile boolean stopWorker;
     static String storeIncomingData;
-    static String statusText;
-
-    static boolean hasDevice = false;
 
     public static boolean isStopWorker() {
         return stopWorker;
@@ -130,14 +124,10 @@ public class BluetoothConnectionService extends Service {
     public BluetoothConnectionService() {
     }
 
-    //Getters and Setters
-
     /*
     * Service Connection Step 11:
     * create the methods for this service called by the activity
     * */
-
-
     void beginListenForData() {
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
@@ -164,7 +154,6 @@ public class BluetoothConnectionService extends Service {
                                     handler.post(new Runnable() {
                                         public void run() {
                                             storeIncomingData = data;
-                                            //storeIncomingData =
                                         }
                                     });
                                 }
@@ -190,45 +179,22 @@ public class BluetoothConnectionService extends Service {
         mmOutputStream.write(str.getBytes());
     }
 
-    //Method which attempts to find a previously paired to the Android device to a Bluetooth device
-    void findBT() {
-        if (mBluetoothAdapter == null) {
-            showMessage("No bluetooth adapter available");
-        } else if (mBluetoothAdapter.isEnabled()) {
-            String address = mBluetoothAdapter.getAddress();
-            String name = mBluetoothAdapter.getName();
-            statusText = name + " : " + address;
-            showMessage(statusText);
-        } else {
-            statusText = "Bluetooth is not on";
-            showMessage(statusText);
-        }
-    }//END findBT
-
     //Method which connects the previously paired Bluetooth device to the Android device
     void openBT() throws IOException {
-        UUID uuid; //Standard //SerialPortService ID
-        uuid = UUID.fromString("f80a6f30-85c3-11e5-af63-feff819cdc9f");
-        boolean test = true;
-        for (int i = 0; i < 100 && test; i++) {
-            try {
-                mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
-                mmSocket.connect();
-                showMessage("Connection Thread Started");
-                test = false;
-                mmOutputStream = mmSocket.getOutputStream();
-                mmInputStream = mmSocket.getInputStream();
-                showMessage("Connection Thread Started");
-                beginListenForData();
-                //showMessage("Connection Thread Started");
-            }
-            catch (Exception connectionException) {
-                //unable to connect ; close socket
-                if (i % 10 == 0) {
-                    showMessage("Failed connection attempt: " + i);
-                }
-                mmSocket.close();
-            }
+        //UUID uuid; //Standard //SerialPortService ID
+        //uuid = UUID.fromString("f80a6f30-85c3-11e5-af63-feff819cdc9f");
+        final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+        try {
+            mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
+            mmSocket.connect();
+            mmOutputStream = mmSocket.getOutputStream();
+            mmInputStream = mmSocket.getInputStream();
+            beginListenForData();
+        }
+        catch (Exception connectionException) {
+            //unable to connect ; close socket
+            showMessage("Failed connection attempt");
+            mmSocket.close();
         }
     }
 
@@ -244,12 +210,6 @@ public class BluetoothConnectionService extends Service {
     public void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
                 theMsg, (Toast.LENGTH_SHORT));
-        msg.show();
-    }
-
-    public void showLongMessage(String theMsg) {
-        Toast msg = Toast.makeText(getBaseContext(),
-                theMsg, (Toast.LENGTH_LONG));
         msg.show();
     }
 
