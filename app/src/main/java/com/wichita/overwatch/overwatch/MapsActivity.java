@@ -85,7 +85,9 @@ public class MapsActivity extends FragmentActivity {
 
         try {
             setContentView(R.layout.activity_maps);
+
             setUpMapIfNeeded();
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.718451354462545, -97.29276571422815), 14.0f));
             markerPoints = new ArrayList<>();
             latlngStrings = (EditText) findViewById(R.id.latlngStrings);
             Button sendLatLng = (Button) findViewById(R.id.sendLatLng);
@@ -312,29 +314,35 @@ public class MapsActivity extends FragmentActivity {
             * static string from the bluetooth "listener" thread in BluetoothSerialCommunication
             */
             newPointStr = bluetoothConnectionServiceGMA.storeIncomingData;;
-            showMessage(newPointStr);
-            LatLng point = stringToLatLng(newPointStr);
+            if (newPointStr != null) {
+                showMessage(newPointStr);
+                LatLng point = stringToLatLng(newPointStr);
 
-            //clear the map of all points in order to add a new point
-            map.clear();
-            //Re add user location
-            map.setMyLocationEnabled(true);
-            //Re add all the old markers for markerPoints to the map
-            for (int i = 0; i < markerPoints.size(); i++) {
-                MarkerOptions options1 = new MarkerOptions();
-                options1.position(markerPoints.get(i));
-                options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                map.addMarker(options1);
+                //clear the map of all points in order to add a new point
+                map.clear();
+                //Re add user location
+                map.setMyLocationEnabled(true);
+                //Re add all the old markers for markerPoints to the map
+                for (int i = 0; i < markerPoints.size(); i++) {
+                    MarkerOptions options1 = new MarkerOptions();
+                    options1.position(markerPoints.get(i));
+                    options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    map.addMarker(options1);
+                }
+
+
+                //Add the new UAD loc point requested by the click on Loc
+                markerPoints.add(point);
+                MarkerOptions options2 = new MarkerOptions();
+                options2.position(point);
+                options2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                map.addMarker(options2);
+                //Zoom the map view onto the new point
+                map.animateCamera(CameraUpdateFactory.newLatLng(point));
             }
-
-            //Add the new UAD loc point requested by the click on Loc
-            markerPoints.add(point);
-            MarkerOptions options2 = new MarkerOptions();
-            options2.position(point);
-            options2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            map.addMarker(options2);
-            //Zoom the map view onto the new point
-            map.animateCamera(CameraUpdateFactory.newLatLng(point));
+            else {
+                showMessage("UAD data not available yet:\nPLEASE WAIT THEN TRY AGAIN");
+            }
         }
         catch (Exception e) {
             showMessage("newMapPoint() ERROR");

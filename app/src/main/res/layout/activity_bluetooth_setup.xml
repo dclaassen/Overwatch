@@ -23,7 +23,9 @@
         android:id="@+id/bSXOpenButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="#ffffff"
+        android:layout_marginBottom="5dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -33,7 +35,8 @@
         android:id="@+id/bSXCloseButton"
         android:layout_below="@+id/bSXOpenButton"
         android:layout_alignLeft="@+id/bSXOpenButton"
-        android:layout_alignStart="@+id/bSXOpenButton" />
+        android:layout_alignStart="@+id/bSXOpenButton"
+        android:background="#ffffff" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -43,7 +46,9 @@
         android:id="@+id/bsXDiscoverButton"
         android:layout_below="@+id/instruction02"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="#ffffff"
+        android:layout_marginTop="5dp" />
 
     <TextView
         android:layout_width="wrap_content"
