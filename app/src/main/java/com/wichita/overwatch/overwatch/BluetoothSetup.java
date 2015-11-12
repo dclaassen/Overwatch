@@ -148,6 +148,7 @@ public class BluetoothSetup extends AppCompatActivity {
         //bSJOPEN button's click listener: Initialization, Construction, Method
         bSJOpenButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                boolean isConnected;
                 try {
 
                     if (mBluetoothAdapter == null) {
@@ -158,13 +159,16 @@ public class BluetoothSetup extends AppCompatActivity {
                         bSJTextView01.setText("After Enabling Bluetooth\nTry Open Again");
                         return;
                     }
-                    bluetoothConnectionService01.openBT();
-                    bSJTextView01.setText(
-                                    "Bluetooth Opened" +
-                                    "\nYour Device:\t" + bluetoothConnectionService01.mBluetoothAdapter.getName() +
-                                    "\nYour MAC:\t" + bluetoothConnectionService01.mBluetoothAdapter.getAddress() +
-                                    "\nConnected Device:\t" + bluetoothConnectionService01.mmDevice.getName() +
-                                    "\nConnected MAC:\t" + bluetoothConnectionService01.mmDevice.getAddress());
+                    isConnected = bluetoothConnectionService01.openBT();
+                    if (isConnected) {
+                        bSJTextView01.setText(
+                                            "Bluetooth Opened" +
+                                            "\nYour Device:\t" + bluetoothConnectionService01.mBluetoothAdapter.getName() +
+                                            "\nYour MAC:\t" + bluetoothConnectionService01.mBluetoothAdapter.getAddress() +
+                                            "\nConnected Device:\t" + bluetoothConnectionService01.mmDevice.getName() +
+                                            "\nConnected MAC:\t" + bluetoothConnectionService01.mmDevice.getAddress()
+                                             );
+                    }
                 } catch (Exception e) {
                     showMessage("openButton.setOnClickListener() E ERROR");
                 }

@@ -40,11 +40,27 @@ public class DeviceListActivity extends AppCompatActivity {
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
 
+    //Intent request codes
+    private static final int REQUEST_ENABLE_BT = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Setup the window
         setContentView(R.layout.activity_device_list);
+        try {
+            mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBtAdapter == null) {
+                showMessage("No bluetooth adapter available");
+            } else if (!mBtAdapter.isEnabled()) {
+                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+            }
+        }
+        catch (Exception e) {
+            showMessage("Error creating DeviceListActivity");
+        }
+
 
         // Set result CANCELED in case the user backs out
         //Reason: startActivityForResult has been called to initiate this activity
@@ -116,6 +132,11 @@ public class DeviceListActivity extends AppCompatActivity {
     //Start device discover with the BluetoothAdapter
     private void doDiscovery() {
         if (D) Log.d(TAG, "doDiscovery()");
+
+        // Find and set up the ListView for paired devices
+        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
+        pairedListView.setAdapter(mPairedDevicesArrayAdapter);
+        pairedListView.setOnItemClickListener(mDeviceClickListener);
 
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);

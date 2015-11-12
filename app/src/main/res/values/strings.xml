@@ -55,4 +55,5 @@
     <string name="discoverDevices">Discover Devices</string>
     <string name="selectDevie">Select Device</string>
     <string name="selectBluetoothDevice">1.Select Bluetooth Device</string>
+    <string name="uadLocation">UAD LOC</string>
 </resources>

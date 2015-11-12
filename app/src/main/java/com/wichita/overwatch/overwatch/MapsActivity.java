@@ -85,9 +85,9 @@ public class MapsActivity extends FragmentActivity {
 
         try {
             setContentView(R.layout.activity_maps);
-
             setUpMapIfNeeded();
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.718451354462545, -97.29276571422815), 14.0f));
+            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.72220666573517, -97.28783313184977), 18.0f));
             markerPoints = new ArrayList<>();
             latlngStrings = (EditText) findViewById(R.id.latlngStrings);
             Button sendLatLng = (Button) findViewById(R.id.sendLatLng);
@@ -112,70 +112,74 @@ public class MapsActivity extends FragmentActivity {
             map = fm.getMap();
 
             // Setting onclick event listener for the map
-            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-            @Override
-            public void onMapClick(LatLng point) {
-
-                // Adding new item to the ArrayList
-                markerPoints.add(point);
-                // Adding the new marker to the map
-                MarkerOptions options = new MarkerOptions();
-                options.position(point);
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                map.addMarker(options);
-            }
-            });
-
-        // The map will be cleared on long click
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-
-        @Override
-        public void onMapLongClick(LatLng point) {
-            // Removes all the points from Google Map
-            map.clear();
-
-            // Removes all the points in the ArrayList
-            markerPoints.clear();
-        }
-        });
-
-        //sendLatLng Button Click
-        sendLatLng.setOnClickListener(
-            new Button.OnClickListener() {
-                public void onClick(View v) {
-                    String str = "Sent:\n";
-                    //Print to textbox all the latitude longitude strings
-                    str += markerPoints.toString();
-                    try {
-                        str = markerPointsFormatString();
+            map.setOnMapClickListener(
+                new GoogleMap.OnMapClickListener() {
+                    public void onMapClick(LatLng point) {
+                        // Adding new item to the ArrayList
+                        markerPoints.add(point);
+                        // Adding the new marker to the map
+                        MarkerOptions options = new MarkerOptions();
+                        options.position(point);
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        map.addMarker(options);
                     }
-                    catch (Exception e) {
-                        showMessage("markerPointsFormatString() E ERROR");
-                    }
-                    latlngStrings.setText(str);
-                    transmitStringOnBluetooth();
                 }
-            }
-        );
+            );
 
-        //startRoute Button Click
-        startRoute.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
+            // Anywhere on map Long Click listener
+            map.setOnMapLongClickListener(
+                new GoogleMap.OnMapLongClickListener() {
+                    public void onMapLongClick(LatLng point) {
                         try {
-                            //send the startroute command to the UADAP
-                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~startroute");
+                            // Removes all the points from Google Map
+                            map.clear();
+                            // Removes all the points in the ArrayList
+                            markerPoints.clear();
+                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~clearroute");
                         }
                         catch (Exception e) {
-                            showMessage("startRoute.setOnClickListener() E ERROR");
+                            showMessage("map.setOnMapLongClickListener() E ERROR");
                         }
                     }
                 }
-        );
+            );
 
-        //stopRoute Button Click
-        stopRoute.setOnClickListener(
+            //sendLatLng Button Click
+            sendLatLng.setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v) {
+                        String str = "Sent:\n";
+                        //Print to textbox all the latitude longitude strings
+                        str += markerPoints.toString();
+                        try {
+                            str = markerPointsFormatString();
+                        }
+                        catch (Exception e) {
+                            showMessage("markerPointsFormatString() E ERROR");
+                        }
+                        latlngStrings.setText(str);
+                        transmitStringOnBluetooth();
+                    }
+                }
+            );
+
+            //startRoute Button Click
+            startRoute.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            try {
+                                //send the startroute command to the UADAP
+                                bluetoothConnectionServiceGMA.sendDataOverBluetooth("~startroute");
+                            }
+                            catch (Exception e) {
+                                showMessage("startRoute.setOnClickListener() E ERROR");
+                            }
+                        }
+                    }
+            );
+
+            //stopRoute Button Click
+            stopRoute.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
@@ -187,10 +191,10 @@ public class MapsActivity extends FragmentActivity {
                         }
                     }
                 }
-        );
+            );
 
-        //uadLoc Button Click
-        uadLoc.setOnClickListener(
+            //uadLoc Button Click
+            uadLoc.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
@@ -204,7 +208,7 @@ public class MapsActivity extends FragmentActivity {
                         }
                     }
                 }
-        );
+            );
         }//END try under onCreate()
         catch (Exception e){
             showMessage("Error EXCEPTION e");

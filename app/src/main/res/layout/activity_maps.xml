@@ -22,7 +22,7 @@
 
         <Button
             style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:text="@string/maptype"
             android:id="@+id/Btype"
@@ -32,7 +32,7 @@
             android:background="#ffffff" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:text="@string/in"
             android:id="@+id/Bzoomin"
@@ -43,7 +43,7 @@
 
         <Button
             style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:text="@string/out"
             android:id="@+id/Bzoomout"
@@ -52,9 +52,9 @@
             android:background="#ffffff" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="@string/loc"
+            android:text="@string/uadLocation"
             android:id="@+id/uadLocation"
             android:layout_gravity="left|center_vertical"
             style="?android:attr/buttonStyleSmall"

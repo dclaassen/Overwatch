@@ -154,6 +154,16 @@ public class BluetoothConnectionService extends Service {
                                     handler.post(new Runnable() {
                                         public void run() {
                                             storeIncomingData = data;
+                                            if (storeIncomingData.equals("~echo")) {
+                                                try {
+                                                    sendDataOverBluetooth("~echoreply");
+                                                }
+                                                catch (Exception e) {
+                                                    showMessage("Error beginListenForData()\n" +
+                                                                "~echoreply not sent");
+                                                }
+                                            }
+
                                         }
                                     });
                                 }
@@ -180,7 +190,7 @@ public class BluetoothConnectionService extends Service {
     }
 
     //Method which connects the previously paired Bluetooth device to the Android device
-    void openBT() throws IOException {
+    boolean openBT() throws IOException {
         //UUID uuid; //Standard //SerialPortService ID
         //uuid = UUID.fromString("f80a6f30-85c3-11e5-af63-feff819cdc9f");
         final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
@@ -190,11 +200,13 @@ public class BluetoothConnectionService extends Service {
             mmOutputStream = mmSocket.getOutputStream();
             mmInputStream = mmSocket.getInputStream();
             beginListenForData();
+            return true;
         }
         catch (Exception connectionException) {
             //unable to connect ; close socket
             showMessage("Failed connection attempt");
             mmSocket.close();
+            return false;
         }
     }
 
