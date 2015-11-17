@@ -32,6 +32,9 @@ import com.wichita.overwatch.overwatch.BluetoothConnectionService.BluetoothConne
 
 public class MapsActivity extends FragmentActivity {
 
+    static final String STATE_USER = "user";
+    private String saveStr;
+
     private GoogleMap map;
     static ArrayList<LatLng> markerPoints;
     EditText latlngStrings;
@@ -77,17 +80,24 @@ public class MapsActivity extends FragmentActivity {
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            saveStr = savedInstanceState.getString(STATE_USER);
+        } else {
+            saveStr = null;
+        }
+
         try {
             setContentView(R.layout.activity_maps);
             setUpMapIfNeeded();
             map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.72220666573517, -97.28783313184977), 18.0f));
+            if (saveStr == null) {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.72220666573517, -97.28783313184977), 18.0f));
+            }
             markerPoints = new ArrayList<>();
             latlngStrings = (EditText) findViewById(R.id.latlngStrings);
             Button sendLatLng = (Button) findViewById(R.id.sendLatLng);
@@ -110,6 +120,13 @@ public class MapsActivity extends FragmentActivity {
 
             // Getting Map for the SupportMapFragment
             map = fm.getMap();
+
+            if (saveStr != null) {
+                //showMessage(saveStr);
+                //convert to each token of the saveStr to LatLng obj
+                //then add to markerPoints and
+                savedStringToMarkerPoints(saveStr);
+            }
 
             // Setting onclick event listener for the map
             map.setOnMapClickListener(
@@ -304,7 +321,7 @@ public class MapsActivity extends FragmentActivity {
     //Method which prints messages to the screen called "toasts" (the black box message screens)
     private void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
-                theMsg, (Toast.LENGTH_SHORT));
+                theMsg, (Toast.LENGTH_LONG));
         msg.show();
     }
 
@@ -350,6 +367,44 @@ public class MapsActivity extends FragmentActivity {
         }
         catch (Exception e) {
             showMessage("newMapPoint() ERROR");
+        }
+    }
+
+    /*Method which takes the saved instance string (onSaveInstance(saveStr) created when the
+    * screen is rotated and the map object is destroyed) and parses and recreates the markerPoints
+    * that were already on the screen prior to screen rotation*/
+    public void savedStringToMarkerPoints(String str) {
+        double lat;
+        double lng;
+        String strLat;
+        String strLng;
+        String junk;
+        LatLng tempLatLng;
+
+        if (!str.equals("[]")) {
+            StringTokenizer st = new StringTokenizer(str);
+            while (st.hasMoreTokens()) {
+                try {
+                    strLat = st.nextToken(",");
+                    strLng = st.nextToken();
+                    StringTokenizer latTokenizer = new StringTokenizer(strLat);
+                    junk = latTokenizer.nextToken("(");
+                    strLat = latTokenizer.nextToken();
+                    StringTokenizer lngTokenizer = new StringTokenizer(strLng);
+                    strLng = lngTokenizer.nextToken(")");
+                    lat = Double.parseDouble(strLat);
+                    lng = Double.parseDouble(strLng);
+                    tempLatLng = new LatLng(lat, lng);
+                    markerPoints.add(tempLatLng);
+                    MarkerOptions options1 = new MarkerOptions();
+                    options1.position(tempLatLng);
+                    options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    map.addMarker(options1);
+                } catch (Exception e) {
+                    showMessage("ERROR savedStringToLatLng(String str)");
+                }
+
+            }
         }
     }
 
@@ -413,6 +468,12 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
+    /*
+    * Method which formats the LatLng objects in the markerPoints<LatLng> ArrayList into the
+    * following printable format
+    * 1:    latitude
+    *       longitude
+    * */
     public String markerPointsFormatString() throws Exception {
         String str = "";
         LatLng latLng;
@@ -427,6 +488,13 @@ public class MapsActivity extends FragmentActivity {
         }
 
         return str;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        saveStr = markerPoints.toString();
+        outState.putString(STATE_USER, saveStr);
+        super.onSaveInstanceState(outState);
     }
 
 }
