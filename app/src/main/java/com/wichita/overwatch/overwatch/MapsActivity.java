@@ -1,7 +1,12 @@
 package com.wichita.overwatch.overwatch;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,26 +24,95 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/*
+* Service Connection Step 04:
+* import the BluetoothConnectionService and the BluetoothConnectionServiceBinder
+* */
+import com.wichita.overwatch.overwatch.BluetoothConnectionService.BluetoothConnectionServiceBinder;
+
 public class MapsActivity extends FragmentActivity {
 
+    static final String STATE_USER = "user";
+    private String saveStr;
+
     private GoogleMap map;
-    ArrayList<LatLng> markerPoints;
+    static ArrayList<LatLng> markerPoints;
     EditText latlngStrings;
+
+    /*
+    * Service Connection Step 05:
+    * create a service object to connect to
+    * create a test variable to determine if the activity has been bound to the service
+    * */
+    static BluetoothConnectionService bluetoothConnectionServiceGMA;
+    boolean isBound = false;
+    //END  Service Connection Step 05:
+
+    /*
+    * Service Connection Step 06 - 08:
+    * Service Connection Step 06:
+    * create a connection
+    * */
+    private ServiceConnection bluetoothConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            /*
+            * Service Connection Step 07:
+            * on connect do this....
+            * A:    create a binder
+            * B:    bind the service
+            * C:    set the test variable for boundness to true
+            * */
+            BluetoothConnectionServiceBinder binder = (BluetoothConnectionServiceBinder) service;
+            bluetoothConnectionServiceGMA = BluetoothSetup.bluetoothConnectionService01;
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            /*
+            * Service Connection Step 08:
+            * on disconnect do this
+            * A:    set the  test variable for boundedness to false
+            * */
+            isBound = false;
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            saveStr = savedInstanceState.getString(STATE_USER);
+        } else {
+            saveStr = null;
+        }
+
         try {
             setContentView(R.layout.activity_maps);
             setUpMapIfNeeded();
+            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            if (saveStr == null) {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.72220666573517, -97.28783313184977), 18.0f));
+            }
             markerPoints = new ArrayList<>();
             latlngStrings = (EditText) findViewById(R.id.latlngStrings);
             Button sendLatLng = (Button) findViewById(R.id.sendLatLng);
             Button startRoute = (Button) findViewById(R.id.startRoute);
             Button stopRoute = (Button) findViewById(R.id.stopRoute);
             Button uadLoc = (Button) findViewById(R.id.uadLocation);
+
+            /*
+            * Service Connection Step 09:
+            * A:    create intent to bind
+            * B:    bind the intent, connection, context
+            * */
+            Intent intent01 = new Intent(this, BluetoothConnectionService.class);
+            bindService(intent01, bluetoothConnection, Context.BIND_AUTO_CREATE);
+            //Service Connection END Step 09:
 
             // Getting reference to SupportMapFragment of the activity_main
             SupportMapFragment fm =
@@ -47,91 +121,102 @@ public class MapsActivity extends FragmentActivity {
             // Getting Map for the SupportMapFragment
             map = fm.getMap();
 
+            if (saveStr != null) {
+                //showMessage(saveStr);
+                //convert to each token of the saveStr to LatLng obj
+                //then add to markerPoints and
+                savedStringToMarkerPoints(saveStr);
+            }
+
             // Setting onclick event listener for the map
-            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-            @Override
-            public void onMapClick(LatLng point) {
-
-                // Adding new item to the ArrayList
-                markerPoints.add(point);
-                // Adding the new marker to the map
-                MarkerOptions options = new MarkerOptions();
-                options.position(point);
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                map.addMarker(options);
-            }
-            });
-
-        // The map will be cleared on long click
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-
-        @Override
-        public void onMapLongClick(LatLng point) {
-            // Removes all the points from Google Map
-            map.clear();
-
-            // Removes all the points in the ArrayList
-            markerPoints.clear();
-        }
-        });
-
-        //sendLatLng Button Click
-        sendLatLng.setOnClickListener(
-            new Button.OnClickListener() {
-                public void onClick(View v) {
-                    String str = "Sent:\n";
-                    //Print to textbox all the latitude longitude strings
-                    str += markerPoints.toString();
-                    try {
-                        str = markerPointsFormatString();
+            map.setOnMapClickListener(
+                new GoogleMap.OnMapClickListener() {
+                    public void onMapClick(LatLng point) {
+                        // Adding new item to the ArrayList
+                        markerPoints.add(point);
+                        // Adding the new marker to the map
+                        MarkerOptions options = new MarkerOptions();
+                        options.position(point);
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        map.addMarker(options);
                     }
-                    catch (Exception e) {
-                        showMessage("markerPointsFormatString() E ERROR");
-                    }
-                    latlngStrings.setText(str);
-                    transmitStringOnBluetooth();
                 }
-            }
-        );
+            );
 
-        //startRoute Button Click
-        startRoute.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
+            // Anywhere on map Long Click listener
+            map.setOnMapLongClickListener(
+                new GoogleMap.OnMapLongClickListener() {
+                    public void onMapLongClick(LatLng point) {
                         try {
-                            //send the startroute command to the UADAP
-                            sendControllerSignal("~startroute");
+                            // Removes all the points from Google Map
+                            map.clear();
+                            // Removes all the points in the ArrayList
+                            markerPoints.clear();
+                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~clearroute");
                         }
                         catch (Exception e) {
-                            showMessage("startRoute.setOnClickListener() E ERROR");
+                            showMessage("map.setOnMapLongClickListener() E ERROR");
                         }
                     }
                 }
-        );
+            );
 
-        //stopRoute Button Click
-        stopRoute.setOnClickListener(
+            //sendLatLng Button Click
+            sendLatLng.setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v) {
+                        String str = "Sent:\n";
+                        //Print to textbox all the latitude longitude strings
+                        str += markerPoints.toString();
+                        try {
+                            str = markerPointsFormatString();
+                        }
+                        catch (Exception e) {
+                            showMessage("markerPointsFormatString() E ERROR");
+                        }
+                        latlngStrings.setText(str);
+                        transmitStringOnBluetooth();
+                    }
+                }
+            );
+
+            //startRoute Button Click
+            startRoute.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            try {
+                                //send the startroute command to the UADAP
+                                bluetoothConnectionServiceGMA.sendDataOverBluetooth("~startroute");
+                            }
+                            catch (Exception e) {
+                                showMessage("startRoute.setOnClickListener() E ERROR");
+                            }
+                        }
+                    }
+            );
+
+            //stopRoute Button Click
+            stopRoute.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
                             //send the stoproute command to the UADAP
-                            sendControllerSignal("~stoproute");
+                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~stoproute");
                         }
                         catch (Exception e) {
                             showMessage("stopRoute.setOnClickListener() E ERROR");
                         }
                     }
                 }
-        );
+            );
 
-        //uadLoc Button Click
-        uadLoc.setOnClickListener(
+            //uadLoc Button Click
+            uadLoc.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         try {
                             //send the uadlocation command to the UADAP
-                            sendControllerSignal("~uadlocation");
+                            bluetoothConnectionServiceGMA.sendDataOverBluetooth("~uadlocation");
                             //Ask for, receive, and then add the UAD's current location to the map
                             newUADMapPoint();
                         }
@@ -140,7 +225,7 @@ public class MapsActivity extends FragmentActivity {
                         }
                     }
                 }
-        );
+            );
         }//END try under onCreate()
         catch (Exception e){
             showMessage("Error EXCEPTION e");
@@ -151,6 +236,7 @@ public class MapsActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        map.setMyLocationEnabled(true);
     }
 
     public void changeType(View view) {
@@ -235,14 +321,8 @@ public class MapsActivity extends FragmentActivity {
     //Method which prints messages to the screen called "toasts" (the black box message screens)
     private void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
-                theMsg, (Toast.LENGTH_SHORT));
+                theMsg, (Toast.LENGTH_LONG));
         msg.show();
-    }
-
-    //Method which sends a properly formatted string to the bluetooth "listener" thread
-    void sendControllerSignal(String str) throws IOException{
-        str += "\n";
-        BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
     }
 
     //Method which requests, receives, then adds the UAD's location to the map.
@@ -254,33 +334,77 @@ public class MapsActivity extends FragmentActivity {
             * Static "global" storage space which is accessible to the entire application. It is a
             * static string from the bluetooth "listener" thread in BluetoothSerialCommunication
             */
-            newPointStr = BluetoothSerialCommunication.bscTOmaStr;
-            showMessage(newPointStr);
-            LatLng point = stringToLatLng(newPointStr);
+            newPointStr = bluetoothConnectionServiceGMA.storeIncomingData;;
+            if (newPointStr != null) {
+                showMessage(newPointStr);
+                LatLng point = stringToLatLng(newPointStr);
 
-            //clear the map of all points in order to add a new point
-            map.clear();
-            //Re add user location
-            map.setMyLocationEnabled(true);
-            //Re add all the old markers for markerPoints to the map
-            for (int i = 0; i < markerPoints.size(); i++) {
-                MarkerOptions options1 = new MarkerOptions();
-                options1.position(markerPoints.get(i));
-                options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                map.addMarker(options1);
+                //clear the map of all points in order to add a new point
+                map.clear();
+                //Re add user location
+                map.setMyLocationEnabled(true);
+                //Re add all the old markers for markerPoints to the map
+                for (int i = 0; i < markerPoints.size(); i++) {
+                    MarkerOptions options1 = new MarkerOptions();
+                    options1.position(markerPoints.get(i));
+                    options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    map.addMarker(options1);
+                }
+
+
+                //Add the new UAD loc point requested by the click on Loc
+                markerPoints.add(point);
+                MarkerOptions options2 = new MarkerOptions();
+                options2.position(point);
+                options2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                map.addMarker(options2);
+                //Zoom the map view onto the new point
+                map.animateCamera(CameraUpdateFactory.newLatLng(point));
             }
-
-            //Add the new UAD loc point requested by the click on Loc
-            markerPoints.add(point);
-            MarkerOptions options2 = new MarkerOptions();
-            options2.position(point);
-            options2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            map.addMarker(options2);
-            //Zoom the map view onto the new point
-            map.animateCamera(CameraUpdateFactory.newLatLng(point));
+            else {
+                showMessage("UAD data not available yet:\nPLEASE WAIT THEN TRY AGAIN");
+            }
         }
         catch (Exception e) {
             showMessage("newMapPoint() ERROR");
+        }
+    }
+
+    /*Method which takes the saved instance string (onSaveInstance(saveStr) created when the
+    * screen is rotated and the map object is destroyed) and parses and recreates the markerPoints
+    * that were already on the screen prior to screen rotation*/
+    public void savedStringToMarkerPoints(String str) {
+        double lat;
+        double lng;
+        String strLat;
+        String strLng;
+        String junk;
+        LatLng tempLatLng;
+
+        if (!str.equals("[]")) {
+            StringTokenizer st = new StringTokenizer(str);
+            while (st.hasMoreTokens()) {
+                try {
+                    strLat = st.nextToken(",");
+                    strLng = st.nextToken();
+                    StringTokenizer latTokenizer = new StringTokenizer(strLat);
+                    junk = latTokenizer.nextToken("(");
+                    strLat = latTokenizer.nextToken();
+                    StringTokenizer lngTokenizer = new StringTokenizer(strLng);
+                    strLng = lngTokenizer.nextToken(")");
+                    lat = Double.parseDouble(strLat);
+                    lng = Double.parseDouble(strLng);
+                    tempLatLng = new LatLng(lat, lng);
+                    markerPoints.add(tempLatLng);
+                    MarkerOptions options1 = new MarkerOptions();
+                    options1.position(tempLatLng);
+                    options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    map.addMarker(options1);
+                } catch (Exception e) {
+                    showMessage("ERROR savedStringToLatLng(String str)");
+                }
+
+            }
         }
     }
 
@@ -336,7 +460,7 @@ public class MapsActivity extends FragmentActivity {
             str += latLng.longitude + "\n";
 
             try {
-                BluetoothSerialCommunication.mmOutputStream.write(str.getBytes());
+                bluetoothConnectionServiceGMA.mmOutputStream.write(str.getBytes());
             }
             catch (Exception e) {
                 showMessage("sendLatLng.setOnClickListener() ERROR");
@@ -344,6 +468,12 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
+    /*
+    * Method which formats the LatLng objects in the markerPoints<LatLng> ArrayList into the
+    * following printable format
+    * 1:    latitude
+    *       longitude
+    * */
     public String markerPointsFormatString() throws Exception {
         String str = "";
         LatLng latLng;
@@ -353,11 +483,18 @@ public class MapsActivity extends FragmentActivity {
             str += i + 1;
             str += ":\t";
             str += latLng.latitude;
-            str += ",";
+            str += "\n\t\t";
             str += latLng.longitude + "\n";
         }
 
         return str;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        saveStr = markerPoints.toString();
+        outState.putString(STATE_USER, saveStr);
+        super.onSaveInstanceState(outState);
     }
 
 }

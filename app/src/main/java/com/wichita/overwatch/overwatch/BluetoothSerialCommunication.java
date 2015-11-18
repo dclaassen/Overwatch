@@ -1,10 +1,10 @@
 package com.wichita.overwatch.overwatch;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,73 +15,80 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Set;
-import java.util.UUID;
-
 
 public class BluetoothSerialCommunication extends AppCompatActivity {
 
     TextView myLabel;
     EditText myTextbox;
-    BluetoothAdapter mBluetoothAdapter;
-    BluetoothSocket mmSocket;
-    BluetoothDevice mmDevice;
-    static OutputStream mmOutputStream;
-    static InputStream mmInputStream;
-    static String bscTOmaStr = null;
-    Thread workerThread;
-    byte[] readBuffer;
-    int readBufferPosition;
-    volatile boolean stopWorker;
+
+    /*
+    * Service Connection Step 05 - 08:
+    * Service Connection Step 05:
+    * create a service object to connect to
+    * create a test variable to determine if the activity has been bound to the service
+    * */
+    static BluetoothConnectionService bluetoothConnectionServiceBSC;
+    boolean isBound = false;
+    /*
+    * Service Connection Step 06:
+    * create a connection
+    * */
+    private ServiceConnection bluetoothConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            /*
+            * Service Connection Step 07:
+            * on connect do this....
+            * A:    create a binder
+            * B:    bind the service
+            * C:    set the test variable for boundness to true
+            * */
+            BluetoothConnectionService.BluetoothConnectionServiceBinder binder = (BluetoothConnectionService.BluetoothConnectionServiceBinder) service;
+            bluetoothConnectionServiceBSC = BluetoothSetup.bluetoothConnectionService01;
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            /*
+            * Service Connection Step 08:
+            * on disconnect do this
+            * A:    set the  test variable for boundedness to false
+            * */
+            isBound = false;
+
+        }
+    };
+    //END Service Connection Step 05 - 08:
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_serial_communication);
-        Button openButton = (Button)findViewById(R.id.open);
+
         Button sendButton = (Button)findViewById(R.id.send);
-        Button closeButton = (Button)findViewById(R.id.close);
-        myLabel = (TextView)findViewById(R.id.label);
+
+        myLabel = (TextView)findViewById(R.id.textView01);
         myTextbox = (EditText)findViewById(R.id.entry);
 
-        //OPEN button's click listener: Initialization, Construction, Method
-        openButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                try {
-                    findBT();
-                    openBT();
-                }
-                catch (IOException ex) {
-                    showMessage("openButton.setOnClickListener IO ERROR");
-                }
-                catch (Exception e) {
-                    showMessage("openButton.setOnClickListener() E ERROR");
-                }
-            }
-        });
-
-        //CLOSE button's click listener: Initialization, Construction, Method
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                try {
-                    closeBT();
-                }
-                catch (IOException ex) {
-                    showMessage("closeButton.setOnClickListener IO ERROR");
-                }
-                catch (Exception e) {
-                    showMessage("closeButton.setOnClickListener() E ERROR");
-                }
-            }
-        });
+        /*
+        * Service Connection Step 09:
+        * A:    create intent to bind
+        * B:    bind the intent, connection, context
+        * */
+        Intent intent01 = new Intent(this, BluetoothConnectionService.class);
+        bindService(intent01, bluetoothConnection, Context.BIND_AUTO_CREATE);
+        //Service Connection END Step 09:
 
         //SEND button's click listener: Initialization, Construction, Method
         sendButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    sendData();
+                    String msg = myTextbox.getText().toString();
+                    msg += "\n";
+                    bluetoothConnectionServiceBSC.sendDataOverBluetooth(msg);
+                    showMessage("Sending: " + msg);
+                    myLabel.setText("Data Sent");
                 } catch (IOException ex) {
                     showMessage("SEND FAILED");
                 } catch (Exception e) {
@@ -89,108 +96,6 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    //Method which attempts to find a previously paired to the Android device to a Bluetooth device
-    void findBT() {
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            myLabel.setText("No bluetooth adapter available");
-        }
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBluetooth, 0);
-        }
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-                if (device.getName().equals("HC-06")) {
-                    mmDevice = device;
-                    break;
-                }
-            }
-        }
-        myLabel.setText("Bluetooth Device Found");
-    }
-
-    //Method which connects the previously paired Bluetooth device to the Android device
-    void openBT() throws IOException {
-        UUID uuid; //Standard //SerialPortService ID
-        uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-        mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
-        mmSocket.connect();
-        mmOutputStream = mmSocket.getOutputStream();
-        mmInputStream = mmSocket.getInputStream();
-        myLabel.setText("BeginListenForData");
-        beginListenForData();
-        myLabel.setText("Bluetooth Opened");
-    }
-
-    //Method which continuously listens for data coming from the UADAP over Bluetooth
-    void beginListenForData() {
-        final Handler handler = new Handler();
-        final byte delimiter = 10; //This is the ASCII code for a newline character
-        stopWorker = false;
-        readBufferPosition = 0;
-        readBuffer = new byte[9999];
-
-        workerThread = new Thread(new Runnable() {
-            public void run() {
-                while(!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    try {
-                        int bytesAvailable = mmInputStream.available();
-                        if(bytesAvailable > 0) {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            mmInputStream.read(packetBytes);
-                            for(int i=0;i<bytesAvailable;i++) {
-                                byte b = packetBytes[i];
-                                if(b == delimiter) {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, "US-ASCII");
-
-                                    readBufferPosition = 0;
-                                        handler.post(new Runnable() {
-                                            public void run() {
-                                                myLabel.setText(data);
-                                                bscTOmaStr = data;
-                                            }
-                                        });
-                                }
-                                else {
-                                    readBuffer[readBufferPosition++] = b;
-                                }
-                            }
-                        }
-                    }
-                    catch (IOException ex) {
-                        stopWorker = true;
-                    }
-                }//END while(!Thread.currentThread().isInterrupted() && !stopWorker)
-            }//END run()
-        });//End initialization and construction of workerThread
-
-        //Start the thread workerThread
-        workerThread.start();
-    }
-
-   //Method which sends data from the Android device to the connected and paired bluetooth device
-    void sendData() throws Exception {
-        String msg = myTextbox.getText().toString();
-        msg += "\n";
-        mmOutputStream.write(msg.getBytes());
-        showMessage(msg);
-        //mmOutputStream.write('A');
-        myLabel.setText("Data Sent");
-    }
-
-    //Method which attempts to close the connected Bluetooth device's connection to the Android device
-    void closeBT() throws Exception {
-        stopWorker = true;
-        mmOutputStream.close();
-        mmInputStream.close();
-        mmSocket.close();
-        myLabel.setText("Bluetooth Closed");
     }
 
     //Method which displays a "toast" on the Android device: (Black Message Box)

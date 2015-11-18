@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Overwatch</string>
 
+    <string name="none_paired">none paired</string>
+    <string name="scanning">scanning</string>
+    <string name="select_device">select device</string>
+    <string name="none_found">none found</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_bluetooth_serial_communication">BluetoothSerialCommunication
@@ -37,4 +41,19 @@
     <string name="stop">Stop</string>
     <string name="loc">Loc</string>
     <string name="startSmall">Start</string>
+    <string name="bSXOpen">OPEN</string>
+    <string name="enterAddressOrSearch">Enter Address or Search</string>
+    <string name="discover">Discover</string>
+    <string name="close">CLOSE</string>
+    <string name="enable">ENABLE</string>
+    <string name="scan">SCAN</string>
+    <string name="viewpaired">VIEW PAIRED</string>
+    <string name="title_activity_device_list">DeviceListActivity</string>
+    <string name="scan2">Scan</string>
+    <string name="newDevices">New Devices</string>
+    <string name="pairedDevices">Paired Devices</string>
+    <string name="discoverDevices">Discover Devices</string>
+    <string name="selectDevie">Select Device</string>
+    <string name="selectBluetoothDevice">1.Select Bluetooth Device</string>
+    <string name="uadLocation">UAD LOC</string>
 </resources>
