@@ -229,4 +229,5 @@ public class DeviceListActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-}
+
+}//END DeviceListActivity.java

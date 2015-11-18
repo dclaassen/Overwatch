@@ -26,9 +26,7 @@ import java.util.UUID;
 * Use Service Connection Steps 4 - 10 shown in BluetoothSetup Activity
 * On Service Connection Step 5, name the BluetoothConnectionService something locally appropriate
 * On Service Connection Step 10, use step 05's connection variable when the connection is needed
-* */
-
-
+*/
 public class BluetoothConnectionService extends Service {
 
     /*
@@ -127,7 +125,12 @@ public class BluetoothConnectionService extends Service {
     /*
     * Service Connection Step 11:
     * create the methods for this service called by the activity
-    * */
+    */
+
+    /*
+    * Method which listens for, receives, and stores messages from the UAD over bluetooth.
+    * Slightly modified version available on Android Development Bluetooth page
+    */
     void beginListenForData() {
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
@@ -163,15 +166,14 @@ public class BluetoothConnectionService extends Service {
                                                                 "~echoreply not sent");
                                                 }
                                             }
-
-                                        }
-                                    });
-                                }
+                                        }//END public void run()
+                                    });//END handler.post(new Runnable()
+                                }//END if(b == delimiter)
                                 else {
                                     readBuffer[readBufferPosition++] = b;
                                 }
-                            }
-                        }
+                            }//END for(int i=0;i<bytesAvailable;i++)
+                        }//END if(bytesAvailable > 0)
                     }
                     catch (IOException ex) {
                         stopWorker = true;
@@ -191,8 +193,7 @@ public class BluetoothConnectionService extends Service {
 
     //Method which connects the previously paired Bluetooth device to the Android device
     boolean openBT() throws IOException {
-        //UUID uuid; //Standard //SerialPortService ID
-        //uuid = UUID.fromString("f80a6f30-85c3-11e5-af63-feff819cdc9f");
+        //UUID with Bluetooth Serial Prefix indicating a connection with a serial Bluetooth device
         final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
         try {
             mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
@@ -210,7 +211,7 @@ public class BluetoothConnectionService extends Service {
         }
     }
 
-    //Method which attempts to close the connected Bluetooth device's connection to the Android device
+    //Method which attempts to close the connection to the connected Bluetooth device
     void closeBT() throws Exception {
         stopWorker = true;
         mmOutputStream.close();
@@ -244,4 +245,5 @@ public class BluetoothConnectionService extends Service {
             return BluetoothConnectionService.this;
         }
     }
-}
+
+}//END BluetoothConnectionService.java

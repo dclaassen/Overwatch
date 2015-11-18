@@ -54,14 +54,10 @@ public class BluetoothRemoteControl extends AppCompatActivity {
         }
     };
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_remote_control);
-
-
 
         Button forward = (Button)findViewById(R.id.forward);
         Button backward = (Button)findViewById(R.id.backward);
@@ -87,6 +83,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
         * On releasing button the halt command is sent ex) notforward
         * When it is released the reset type command is given
         */
+        //onClickListeners for Forward button
         forward.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -124,6 +121,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }));
         */
 
+        //onClickListeners for Backward button
         backward.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -162,6 +160,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }));
         */
 
+        //onClickListeners for Left button
         left.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -201,6 +200,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }));
         */
 
+        //onClickListeners for Right button
         right.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -240,7 +240,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }));
         */
 
-        //Regular Button click listeners
+        //onClickListener for A button
         a.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -253,7 +253,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
 
-        //b button click listener
+        //onClickListener for B button
         b.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -266,7 +266,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
 
-        //select button click listener
+        //onClickListener for Select button
         select.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -280,7 +280,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
 
-        //start button click listener
+        //onClickListener for Start button
         start.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
@@ -294,7 +294,7 @@ public class BluetoothRemoteControl extends AppCompatActivity {
                 }
         );
 
-    }
+    }//END onCreate
 
     //Prints a message to the Android screen (in the form of a toast: black message box)
     private void showMessage(String theMsg) {
@@ -325,4 +325,4 @@ public class BluetoothRemoteControl extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-}
+}//END BluetoothRemoteControl.java

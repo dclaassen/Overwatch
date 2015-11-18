@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         bluetoothSetupSwitchScreens = (Button)findViewById(R.id.bluetoothSetup);
         bluetoothSetupSwitchScreens.setOnClickListener(this);
         bluetoothSerialCommunicationSwitchScreens = (Button)findViewById(R.id.bluetoothSerialCommunication);
@@ -128,5 +127,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-}
+}//End MainActivity.java

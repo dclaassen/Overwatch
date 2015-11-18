@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 /*
 * Service Connection Step 04:
 * import the BluetoothConnectionService and the BluetoothConnectionServiceBinder
-* */
+*/
 import com.wichita.overwatch.overwatch.BluetoothConnectionService.BluetoothConnectionServiceBinder;
 
 public class MapsActivity extends FragmentActivity {
@@ -43,7 +43,7 @@ public class MapsActivity extends FragmentActivity {
     * Service Connection Step 05:
     * create a service object to connect to
     * create a test variable to determine if the activity has been bound to the service
-    * */
+    */
     static BluetoothConnectionService bluetoothConnectionServiceGMA;
     boolean isBound = false;
     //END  Service Connection Step 05:
@@ -52,7 +52,7 @@ public class MapsActivity extends FragmentActivity {
     * Service Connection Step 06 - 08:
     * Service Connection Step 06:
     * create a connection
-    * */
+    */
     private ServiceConnection bluetoothConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -74,7 +74,7 @@ public class MapsActivity extends FragmentActivity {
             * Service Connection Step 08:
             * on disconnect do this
             * A:    set the  test variable for boundedness to false
-            * */
+            */
             isBound = false;
 
         }
@@ -121,14 +121,13 @@ public class MapsActivity extends FragmentActivity {
             // Getting Map for the SupportMapFragment
             map = fm.getMap();
 
+            //If there is information saved from a previous state
             if (saveStr != null) {
-                //showMessage(saveStr);
-                //convert to each token of the saveStr to LatLng obj
-                //then add to markerPoints and
+                //convert each token of the saveStr to LatLng obj then add to markerPonts
                 savedStringToMarkerPoints(saveStr);
             }
 
-            // Setting onclick event listener for the map
+            // onClickListener for the map. Add a marker for each touch
             map.setOnMapClickListener(
                 new GoogleMap.OnMapClickListener() {
                     public void onMapClick(LatLng point) {
@@ -143,15 +142,16 @@ public class MapsActivity extends FragmentActivity {
                 }
             );
 
-            // Anywhere on map Long Click listener
+            //onLongClicklistener for the map. Clear map points when map is long touched
             map.setOnMapLongClickListener(
                 new GoogleMap.OnMapLongClickListener() {
                     public void onMapLongClick(LatLng point) {
                         try {
                             // Removes all the points from Google Map
                             map.clear();
-                            // Removes all the points in the ArrayList
+                            // Removes all the points in the markerPoints ArrayList
                             markerPoints.clear();
+                            //send clearroute command to UAD so that it clears its route
                             bluetoothConnectionServiceGMA.sendDataOverBluetooth("~clearroute");
                         }
                         catch (Exception e) {
@@ -285,21 +285,7 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #map} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
+    //Method which creates the map fragment basics
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that there is no existing instantiated map
         if (map == null) {
@@ -313,7 +299,7 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    //Method which sets up the map
+    //Method which allows for user location services to be enabled
     private void setUpMap() {
         map.setMyLocationEnabled(true);
     }
@@ -321,7 +307,7 @@ public class MapsActivity extends FragmentActivity {
     //Method which prints messages to the screen called "toasts" (the black box message screens)
     private void showMessage(String theMsg) {
         Toast msg = Toast.makeText(getBaseContext(),
-                theMsg, (Toast.LENGTH_LONG));
+                theMsg, (Toast.LENGTH_SHORT));
         msg.show();
     }
 
@@ -330,9 +316,11 @@ public class MapsActivity extends FragmentActivity {
         try {
             String newPointStr;
             /*
-            * BluetoothSerialCommunication.bscTOmaStr explanation:
-            * Static "global" storage space which is accessible to the entire application. It is a
-            * static string from the bluetooth "listener" thread in BluetoothSerialCommunication
+            * When the UAD sends a response to the uadlocation request sent by this application,
+            * its response is stored in storeIncomingData. In order to add this information to the
+            * map, the incoming string data is converted to a LatLng object, stored in the
+            * ArrayList<LatLng> markerPoints, and then added as a marker to the map representing
+            * that markerPoint.
             */
             newPointStr = bluetoothConnectionServiceGMA.storeIncomingData;;
             if (newPointStr != null) {
@@ -350,7 +338,6 @@ public class MapsActivity extends FragmentActivity {
                     options1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                     map.addMarker(options1);
                 }
-
 
                 //Add the new UAD loc point requested by the click on Loc
                 markerPoints.add(point);
@@ -370,9 +357,11 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    /*Method which takes the saved instance string (onSaveInstance(saveStr) created when the
+    /*
+    * Method which takes the saved instance string (onSaveInstance(saveStr) created when the
     * screen is rotated and the map object is destroyed) and parses and recreates the markerPoints
-    * that were already on the screen prior to screen rotation*/
+    * that were already on the screen prior to screen rotation
+    */
     public void savedStringToMarkerPoints(String str) {
         double lat;
         double lng;
@@ -417,7 +406,7 @@ public class MapsActivity extends FragmentActivity {
     *
     * It takes the string and tokenizes it using the "," as a delimeter
     * It then takes the first string token and converts it into a Latitude double variable
-    * It then takes the second string token and converts it inot a Longitude double variable
+    * It then takes the second string token and converts it into a Longitude double variable
     * It then returns a new object of type LatLng, using the new Latitude and Longitude double
     * variables as parameters, to the calling Class
     * */
@@ -473,7 +462,7 @@ public class MapsActivity extends FragmentActivity {
     * following printable format
     * 1:    latitude
     *       longitude
-    * */
+    */
     public String markerPointsFormatString() throws Exception {
         String str = "";
         LatLng latLng;
@@ -490,6 +479,13 @@ public class MapsActivity extends FragmentActivity {
         return str;
     }
 
+    /*
+    * Method which stores the ArrayList<LatLng> markerPoints data in string form in order to pass
+    * it back to a new instance of the MapsActivity. This is typically used when the screen is
+    * rotated which destroys the current MapsActivity then recreates a new one in the changed
+    * format. This method prevents the loss of markers added to the map by the user in the case of
+    * screen rotation.
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         saveStr = markerPoints.toString();
@@ -497,4 +493,4 @@ public class MapsActivity extends FragmentActivity {
         super.onSaveInstanceState(outState);
     }
 
-}
+}//END MapsActivity.java
