@@ -1,3 +1,8 @@
+/*
+*Stackoverflow Code Sample
+*Found at http://stackoverflow.com/a/12795551/64216
+*Found on September 2015
+* */
 package com.wichita.overwatch.overwatch;
 
 import android.os.Handler;
