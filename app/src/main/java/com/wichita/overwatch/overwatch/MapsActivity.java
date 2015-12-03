@@ -437,17 +437,40 @@ public class MapsActivity extends FragmentActivity {
     public void transmitStringOnBluetooth() {
         String str;
         LatLng latLng;
+        String tempLatString;
+        String tempLngString;
 
         for (int i = 0; i < markerPoints.size(); i++) {
+
             str = "";
-            latLng = markerPoints.get(i);
+            tempLatString = "";
+            tempLngString = "";
 
-            str += i + 1;
-            str += ",";
-            str += latLng.latitude;
-            str += ",";
-            str += latLng.longitude + "\n";
+            try {
 
+
+                latLng = markerPoints.get(i);
+                ///tempLatString += latLng.latitude;
+                //tempLngString += latLng.longitude;
+                //String.format("%.6f", tempLatString);
+                //String.format("%.6f", tempLatString);
+
+                str = String.format("%d,%.6f,%.6f\n", i, latLng.latitude, latLng.longitude);
+
+                /*
+                str += i + 1;
+                str += ",";
+                //str += latLng.latitude;
+                str += tempLatString;
+                str += ",";
+                //str += latLng.longitude + "\n";
+                str += tempLngString;
+                */
+                //showMessage(str);
+            }
+            catch (Exception e) {
+                showMessage("transmitStringOnBluetooth() ERROR");
+            }
             try {
                 bluetoothConnectionServiceGMA.mmOutputStream.write(str.getBytes());
             }
@@ -471,9 +494,9 @@ public class MapsActivity extends FragmentActivity {
             latLng = markerPoints.get(i);
             str += i + 1;
             str += ":\t";
-            str += latLng.latitude;
+            str += String.format("%.6f", latLng.latitude);
             str += "\n\t\t";
-            str += latLng.longitude + "\n";
+            str += String.format("%.6f\n", latLng.longitude);
         }
 
         return str;
