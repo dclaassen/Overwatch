@@ -126,4 +126,4 @@ public class BluetoothSerialCommunication extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-}
+}//End BluetoothSerialCommunication.java

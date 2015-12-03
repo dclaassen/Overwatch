@@ -254,4 +254,4 @@ public class BluetoothSetup extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-}
+}//End BluetoothSetup.java
